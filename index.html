@@ -138,7 +138,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
   </div>
 
-  <!-- 後台（密碼保護） -->
+  <!-- 後台（聯絡方式下面，密碼保護） -->
   <div id="adminWrapper" style="margin-top:24px;">
     <div id="adminLock" style="text-align:center;padding:10px;">
       <div class="glass" style="display:inline-block;padding:20px 28px;">
@@ -148,15 +148,18 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
         <div id="adminPwError" style="font-size:11px;color:#f08080;margin-top:8px;display:none;">密碼錯誤</div>
       </div>
     </div>
+
     <div id="adminPanel" class="admin-panel glass" style="display:none;">
       <div class="admin-title">🔧 後台管理（僅你自己可見）</div>
+
+      <!-- 資料備份 -->
       <div class="admin-section">
         <div class="admin-section-title">💾 資料備份</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn" id="exportBtn">📤 匯出 JSON</button>
           <label class="btn" style="cursor:pointer;">📥 匯入 JSON<input type="file" id="importInput" accept=".json" style="display:none;"></label>
         </div>
-        <div style="font-size:11px;color:rgba(138,180,212,0.5);margin-top:10px;line-height:1.8;">
+        <div style="font-size:11px;color:rgba(138,180,212,0.5);margin-top:10px;line-height:1.9;">
           每次新增卡片的完整工作流：<br>
           1️⃣ 開網站 → 輸入密碼 → 按「📥 匯入 JSON」選上次備份檔<br>
           2️⃣ 在後台填寫標題、推薦理由、FAQ、連結 → 按「新增卡片」<br>
@@ -164,10 +167,14 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
           ✅ 完成！讀者重新整理網頁就會看到新卡片。
         </div>
       </div>
+
+      <!-- 分類排序 -->
       <div class="admin-section">
         <div class="admin-section-title">📂 分類排序（拖曳調整）</div>
         <ul class="sort-list" id="sortList"></ul>
       </div>
+
+      <!-- 新增卡片 -->
       <div class="admin-section-title">➕ 新增卡片</div>
       <div class="form-row">
         <div class="form-group">
@@ -290,19 +297,24 @@ const THEME_COLORS={book:{dot:'#6c9ebf',label:'📚 書籍推薦'},course:{dot:'
 let tabOrder=[{key:'all',label:'全部'},{key:'book',label:'📚 書籍推薦'},{key:'course',label:'🎓 找我上課'},{key:'technique',label:'👶 技巧分享'},{key:'question',label:'❓ 常見問題'},{key:'shopping',label:'🛒 團購資訊'}];
 let cardsData=[
   {id:1,theme:'book',title:'怪獸家族',description:'透過溫暖的故事幫助孩子理解情緒，家長超適合讀給孩子聽。',links:[],image:null,faqs:[]},
-  {id:2,theme:'shopping',title:'握筆器團購',description:'職能治療師精選握筆器，幫助孩子建立正確握筆姿勢。',links:[],image:null,faqs:[{q:'0.7mm 和 1.3mm 差在哪裡？',a:'差在筆芯直徑。\n🟠 1.3mm（較粗）→ 寫字很輕的孩子\n🟠 0.7mm（較細）→ 運筆姿勢不對或寫字很大力的孩子'},{q:'有分左右手嗎？',a:'有！左手版和右手版都有，購買時請備註孩子慣用手。'},{q:'可以換其他鉛筆嗎？',a:'✅ Lyra 粗三角 → 最剛好\n⚠️ 墊腳石小牌子 → 稍鬆但可用\n❌ 公文版、Food 超人 → 不適合'},{q:'適合幾歲？',a:'一般建議 3 歲以上，視握力發展狀況調整。'}]},
-  {id:3,theme:'tool',title:'倒數計時器',description:'幫助孩子建立時間感，減少轉換困難與情緒崩潰，OT 診所常用款。',links:[],image:null,faqs:[{q:'建議買幾分鐘的？',a:'・日常切換 → 5分鐘\n・作業閱讀 → 10～15分鐘\n・洗澡出門 → 3分鐘'},{q:'哪個款式有附矽膠套？',a:'紅色旋轉款有附矽膠保護套，適合容易摔東西的孩子。'},{q:'什麼時候開團？',a:'目前已結束，下次開團會在 IG 限動公告 @ot.workflow'}]},
+  {id:2,theme:'shopping',title:'握筆器團購',description:'職能治療師精選握筆器，幫助孩子建立正確握筆姿勢。',links:[{label:'前往團購表單',url:'https://instagram.com/ot.workflow'}],image:null,faqs:[{q:'0.7mm 和 1.3mm 差在哪裡？',a:'差在筆芯直徑。\n🟠 1.3mm（較粗）→ 寫字很輕的孩子\n🟠 0.7mm（較細）→ 運筆姿勢不對或寫字很大力的孩子'},{q:'有分左右手嗎？',a:'有！左手版和右手版都有，購買時請備註孩子慣用手。'},{q:'可以換其他鉛筆嗎？',a:'✅ Lyra 粗三角 → 最剛好\n⚠️ 墊腳石小牌子 → 稍鬆但可用\n❌ 公文版、Food 超人 → 不適合'},{q:'適合幾歲？',a:'一般建議 3 歲以上，視握力發展狀況調整。'}]},
+  {id:3,theme:'tool',title:'倒數計時器',description:'幫助孩子建立時間感，減少轉換困難與情緒崩潰，OT 診所常用款。',links:[{label:'查看介紹影片',url:'https://instagram.com/ot.workflow'},{label:'前往購買',url:'https://instagram.com/ot.workflow'}],image:null,faqs:[{q:'建議買幾分鐘的？',a:'・日常切換 → 5分鐘\n・作業閱讀 → 10～15分鐘\n・洗澡出門 → 3分鐘'},{q:'哪個款式有附矽膠套？',a:'紅色旋轉款有附矽膠保護套，適合容易摔東西的孩子。'},{q:'什麼時候開團？',a:'目前已結束，下次開團會在 IG 限動公告 @ot.workflow'}]},
 ];
 let currentFilter='all',newImageDataUrl=null,editImageDataUrl=null;
 
+// 密碼鎖
 document.getElementById('adminUnlockBtn').addEventListener('click',function(){
   if(document.getElementById('adminPwInput').value===ADMIN_PW){
     document.getElementById('adminLock').style.display='none';
     document.getElementById('adminPanel').style.display='block';
-    renderSortList();renderCards();
-  }else{document.getElementById('adminPwError').style.display='block';}
+    renderSortList();
+  } else {
+    document.getElementById('adminPwError').style.display='block';
+  }
 });
-document.getElementById('adminPwInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('adminUnlockBtn').click();});
+document.getElementById('adminPwInput').addEventListener('keydown',function(e){
+  if(e.key==='Enter') document.getElementById('adminUnlockBtn').click();
+});
 
 function addFaqRow(editorId,q,a){
   q=q||'';a=a||'';
@@ -351,20 +363,16 @@ function renderCards(){
       a.addEventListener('click',function(){const t=document.getElementById('card-'+card.id);if(t)t.scrollIntoView({behavior:'smooth',block:'center'});});
       quickLinks.appendChild(a);
     });
-  }else{quickLinks.style.display='none';}
-
-  const adminOpen=document.getElementById('adminPanel').style.display==='block';
+  } else {quickLinks.style.display='none';}
 
   list.forEach(function(card){
     const faqHtml=(card.faqs&&card.faqs.length)?'<div class="faq-list">'+card.faqs.map(function(f){return'<div class="faq-item"><button class="faq-q">'+f.q+'<span class="faq-toggle">＋</span></button><div class="faq-a">'+f.a+'</div></div>';}).join('')+'</div>':'';
-    let igDeepLink=null;
-    if(card.theme==='technique'&&card.link){const m=card.link.match(/instagram\.com\/(?:reel|p|tv)\/([A-Za-z0-9_-]+)/);if(m)igDeepLink='instagram://media?id='+m[1];}
     const isShopping=card.theme==='shopping'&&card.links&&card.links.length>0;
     const firstLink=card.links&&card.links[0];
     const imgSrc=card.image||null;
     let imageBlock;
     if(imgSrc&&igDeepLink){
-      imageBlock='<div class="card-image" style="cursor:pointer;position:relative;" data-ig="'+igDeepLink+'" data-url="'+firstLink.url+'"><img src="'+imgSrc+'" alt="'+card.title+'"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);border-radius:8px;"><div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;"><div style="width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:15px solid white;margin-left:3px;"></div></div></div></div>';
+      imageBlock='<div class="card-image" style="cursor:pointer;position:relative;" data-ig="'+igDeepLink+'" data-url="'+(firstLink&&firstLink.url)+'"><img src="'+imgSrc+'" alt="'+card.title+'"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);border-radius:8px;"><div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;"><div style="width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:15px solid white;margin-left:3px;"></div></div></div></div>';
     }else if(imgSrc&&isShopping){
       imageBlock='<div class="card-image" style="cursor:pointer;position:relative;" data-shoplink="'+firstLink.url+'"><img src="'+imgSrc+'" alt="'+card.title+'"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);border-radius:8px;"><div style="background:rgba(224,122,152,0.9);color:white;font-size:11px;font-weight:600;padding:6px 14px;border-radius:20px;">🛒 '+(firstLink.label||'前往團購')+'</div></div></div>';
     }else if(imgSrc){
@@ -375,10 +383,14 @@ function renderCards(){
       imageBlock='<div class="card-image">📌</div>';
     }
     const linksHtml=(card.links||[]).filter(function(l){return l.url;}).map(function(l){
-      return '<a class="card-link" href="'+l.url+'" target="_blank" style="display:inline-block;margin-top:6px;margin-right:10px;color:#4a9eda;">'+( l.label||'了解更多')+' →</a>';
+      return '<a class="card-link" href="'+l.url+'" target="_blank" style="display:inline-block;margin-top:6px;margin-right:10px;color:#4a9eda;">'+(l.label||'了解更多')+' →</a>';
     }).join('');
-    const actionBtns=adminOpen?'<div class="card-actions"><button class="btn edit" data-edit="'+card.id+'" style="flex:1">✏️ 編輯</button><button class="btn delete" data-del="'+card.id+'" style="flex:1">刪除</button></div>':'';
     const el=document.createElement('div');el.className='card';el.id='card-'+card.id;el.dataset.theme=card.theme;
+
+    // 編輯刪除按鈕只有在後台解鎖後才顯示
+    const adminOpen=document.getElementById('adminPanel').style.display==='block';
+    const actionBtns=adminOpen?'<div class="card-actions"><button class="btn edit" data-edit="'+card.id+'" style="flex:1">✏️ 編輯</button><button class="btn delete" data-del="'+card.id+'" style="flex:1">刪除</button></div>':'';
+
     el.innerHTML=imageBlock+'<div class="card-title">'+card.title+'</div><div class="card-desc">'+card.description+'</div>'+faqHtml+linksHtml+actionBtns;
     container.appendChild(el);
   });
@@ -416,6 +428,7 @@ document.getElementById('submitBtn').addEventListener('click',function(){
   const links=[];
   if(l1url)links.push({label:l1label||'了解更多',url:l1url});
   if(l2url)links.push({label:l2label||'了解更多',url:l2url});
+  const urlVal=document.getElementById('imageUrlInput').value.trim();
   cardsData.push({id:Math.max(0,...cardsData.map(function(c){return c.id;}))+1,theme:theme,title:title,description:desc,links:links,image:newImageDataUrl||urlVal||null,faqs:getFaqsFromEditor('addFaqEditor')});
   document.getElementById('themeSelect').value='';
   document.getElementById('titleInput').value='';
@@ -477,13 +490,15 @@ document.getElementById('avatarUpload').addEventListener('change',function(){con
 document.getElementById('exportBtn').addEventListener('click',function(){
   const data={version:1,avatar:document.getElementById('profileAvatar').src,cardsData:cardsData,tabOrder:tabOrder};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='ot-workflow-backup.json';a.click();URL.revokeObjectURL(url);
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='ot-workflow-backup.json';a.click();URL.revokeObjectURL(url);
 });
 document.getElementById('importInput').addEventListener('change',function(){
   const file=this.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=function(e){
-    try{const data=JSON.parse(e.target.result);
+    try{
+      const data=JSON.parse(e.target.result);
       if(data.cardsData)cardsData=data.cardsData;
       if(data.tabOrder)tabOrder=data.tabOrder;
       if(data.avatar&&data.avatar.startsWith('data:'))document.getElementById('profileAvatar').src=data.avatar;
