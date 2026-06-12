@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "avatar": "https://i.postimg.cc/FsPZ0yP1/R0010032.jpg",
+  "cardsData": [
+    {
+      "id": 1,
+      "theme": "shopping",
+      "title": "握筆器",
+      "description": "自己只感商自己，不惶經哦購購物一手，可以開團購",
+      "links": [
+        { "label": "(IG)影片介紹", "url": "https://www.instagram.com/reel/DYwj6tEBP4d/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" },
+        { "label": "(FB)影片介紹", "url": "https://www.facebook.com/share/r/1CzvvBeTP9/" },
+        { "label": "蝦皮分潤", "url": "https://s.shopee.tw/7VDc8eg47K" },
+        { "label": "官網（無分潤）", "url": "https://reurl.cc/V2ZjGZ" }
+      ]
+    },
+    {
+      "id": 2,
+      "theme": "shopping",
+      "title": "標籤機",
+      "description": "幫助孩子學習標籤、培養創意力的實用工具",
+      "links": [
+        { "label": "(IG)影片介紹", "url": "https://www.instagram.com/reel/DOYlsLwEwxb/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" },
+        { "label": "(FB)影片介紹", "url": "https://www.facebook.com/share/r/1Hvabcawwz/" },
+        { "label": "購買連結", "url": "https://h8lu0z6o3s.cashier.ecpay.com.tw" }
+      ]
+    },
+    {
+      "id": 3,
+      "theme": "shopping",
+      "title": "拼圖",
+      "description": "開團中",
+      "links": [
+        { "label": "(IG)影片介紹", "url": "https://www.instagram.com/reel/DZXqOJwTfZV/?utm_source=ig_web_button_share_sheet&igsh=MzRlODBiNWFlZA==" },
+        { "label": "(FB)影片介紹", "url": "https://www.facebook.com/share/r/1bHeYawgrf/" },
+        { "label": "團購連結", "url": "https://gbf.tw/cteyc" }
+      ]
+    },
+    {
+      "id": 4,
+      "theme": "shopping",
+      "title": "媽媽友",
+      "description": "團購已結束",
+      "links": [
+        { "label": "Line社群", "url": "https://line.me/ti/g2/CYlqRwCYWQY5xludcGtXT2wElRwq3hJtrD0EHA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" }
+      ]
+    },
+    {
+      "id": 5,
+      "theme": "shopping",
+      "title": "火山搖搖",
+      "description": "團購已結束",
+      "links": [
+        { "label": "Line社群", "url": "https://line.me/ti/g2/CYlqRwCYWQY5xludcGtXT2wElRwq3hJtrD0EHA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" }
+      ]
+    },
+    {
+      "id": 6,
+      "theme": "shopping",
+      "title": "倒數計時器",
+      "description": "團購已結束",
+      "links": [
+        { "label": "Line社群", "url": "https://line.me/ti/g2/CYlqRwCYWQY5xludcGtXT2wElRwq3hJtrD0EHA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" }
+      ]
+    },
+    {
+      "id": 7,
+      "theme": "book",
+      "title": "童書",
+      "description": "團購已結束",
+      "links": [
+        { "label": "Line社群", "url": "https://line.me/ti/g2/CYlqRwCYWQY5xludcGtXT2wElRwq3hJtrD0EHA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" }
+      ]
+    }
+  ],
+  "tabOrder": [
+    { "key": "all", "label": "📋 全部" },
+    { "key": "shopping", "label": "🛍️ 團購" },
+    { "key": "book", "label": "📚 書籍推薦" },
+    { "key": "technique", "label": "👶 技巧分享" },
+    { "key": "question", "label": "❓ 常見問題" },
+    { "key": "course", "label": "🎓 找我上課" }
+  ]
+}
