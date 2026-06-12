@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OT Workflow | 思誼職能治療師</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#0d2137;color:#e8f0f8;line-height:1.6;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(26,79,138,0.4) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(13,43,65,0.6) 0%,transparent 60%);pointer-events:none;z-index:0}
+.container{max-width:900px;margin:0 auto;padding:20px;position:relative;z-index:1}
+
+/* 磨砂卡片 */
+.glass{background:rgba(255,255,255,0.06);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.12);border-radius:16px}
+
+.profile-card{padding:28px 24px;margin-bottom:24px;text-align:center}
+.profile-avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid rgba(100,160,220,0.5);box-shadow:0 0 20px rgba(26,79,138,0.4);display:block}
+.profile-name{font-size:20px;font-weight:600;color:#e8f0f8;margin-bottom:4px}
+.profile-motto{background:rgba(0,0,0,0.3);border-left:3px solid #4a9eda;padding:10px 14px;margin:12px 0;font-size:13px;color:#b8d4f0;border-radius:6px;line-height:1.6}
+.profile-bio{font-size:14px;color:#8ab4d4;line-height:1.7}
+
+.content-section{padding:28px;margin-bottom:24px}
+.section-title{font-size:18px;font-weight:600;color:#e8f0f8;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.1)}
+
+/* 標籤頁 */
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.tab-btn{padding:7px 14px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);border-radius:8px;cursor:pointer;font-size:12px;font-weight:500;color:#8ab4d4;transition:all 0.3s;white-space:nowrap}
+.tab-btn:hover{border-color:rgba(74,158,218,0.5);background:rgba(74,158,218,0.1);color:#c8e0f4}
+.tab-btn.active{background:rgba(26,79,138,0.6);color:white;border-color:rgba(74,158,218,0.6)}
+
+/* 快速連結 */
+#quickLinks{display:none;flex-wrap:wrap;gap:8px;margin-bottom:18px;padding:12px 14px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.08)}
+
+/* 卡片 */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.card{border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:all 0.3s}
+.card:hover{border-color:rgba(74,158,218,0.4);background:rgba(255,255,255,0.09);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.card[data-theme="book"]{border-left:3px solid #6c9ebf}
+.card[data-theme="tool"]{border-left:3px solid #52b788}
+.card[data-theme="technique"]{border-left:3px solid #f4a261}
+.card[data-theme="question"]{border-left:3px solid #9b72cf}
+.card[data-theme="shopping"]{border-left:3px solid #e07a98}
+.card-image{width:100%;height:150px;background:rgba(255,255,255,0.08);border-radius:8px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:40px;overflow:hidden}
+.card-image img{width:100%;height:100%;object-fit:cover}
+.card-title{font-size:15px;font-weight:600;color:#e8f0f8;margin-bottom:6px}
+.card-desc{font-size:12px;color:#8ab4d4;margin-bottom:10px;line-height:1.5}
+.card-link{display:inline-block;color:#4a9eda;text-decoration:none;font-size:12px;font-weight:600;margin-top:6px}
+.card-actions{display:flex;gap:8px;margin-top:10px}
+
+/* FAQ */
+.faq-list{margin-top:10px;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px}
+.faq-item{margin-bottom:6px;border:1px solid rgba(255,255,255,0.08);border-radius:8px;overflow:hidden}
+.faq-q{width:100%;text-align:left;background:rgba(255,255,255,0.05);border:none;padding:9px 12px;font-size:12px;font-weight:600;color:#c8e0f4;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-q:hover{background:rgba(255,255,255,0.09)}
+.faq-a{display:none;padding:9px 12px;font-size:12px;color:#8ab4d4;background:rgba(0,0,0,0.15);line-height:1.6;white-space:pre-wrap}
+.faq-a.open{display:block}
+.faq-toggle{font-size:14px;color:#4a9eda;flex-shrink:0;margin-left:8px}
+
+/* 按鈕 */
+.btn{padding:7px 14px;background:rgba(26,79,138,0.7);color:#e8f0f8;border:1px solid rgba(74,158,218,0.4);border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.3s}
+.btn:hover{background:rgba(26,79,138,0.9);border-color:rgba(74,158,218,0.7)}
+.btn.delete{background:rgba(180,50,50,0.4);border-color:rgba(220,80,80,0.4)}.btn.delete:hover{background:rgba(180,50,50,0.7)}
+.btn.edit{background:rgba(40,100,150,0.5);border-color:rgba(74,158,218,0.4)}.btn.edit:hover{background:rgba(40,100,150,0.8)}
+.btn.secondary{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2)}.btn.secondary:hover{background:rgba(255,255,255,0.15)}
+
+/* 後台 */
+.admin-panel{padding:20px;margin-top:24px;border:1px dashed rgba(74,158,218,0.4)!important}
+.admin-title{font-size:13px;font-weight:600;color:#4a9eda;margin-bottom:16px}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:11px;font-weight:600;color:#8ab4d4;margin-bottom:4px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:8px 12px;border:1px solid rgba(74,158,218,0.3);border-radius:6px;font-size:12px;font-family:inherit;background:rgba(255,255,255,0.06);color:#e8f0f8}
+.form-group input::placeholder,.form-group textarea::placeholder{color:rgba(138,180,212,0.5)}
+.form-group select option{background:#0d2137;color:#e8f0f8}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.admin-section{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.admin-section-title{font-size:11px;font-weight:600;color:#8ab4d4;margin-bottom:10px}
+
+/* 排序 */
+.sort-list{list-style:none}
+.sort-item{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 14px;margin-bottom:8px;cursor:grab;font-size:12px;font-weight:500;color:#c8e0f4;user-select:none}
+.sort-item.dragging{opacity:0.4}
+.drag-handle{color:rgba(255,255,255,0.3);font-size:16px}
+.theme-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* 上傳 */
+.upload-area{border:2px dashed rgba(74,158,218,0.4);border-radius:8px;padding:14px;text-align:center;cursor:pointer;background:rgba(74,158,218,0.05);position:relative}
+.upload-area:hover{background:rgba(74,158,218,0.1)}
+.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-preview{width:100%;height:100px;object-fit:cover;border-radius:6px;margin-top:8px;display:none}
+
+/* FAQ 編輯器 */
+.faq-editor{border:1px solid rgba(74,158,218,0.3);border-radius:8px;overflow:hidden}
+.faq-row{border-bottom:1px solid rgba(255,255,255,0.06)}
+.faq-row:last-child{border-bottom:none}
+.faq-row-header{display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;background:rgba(74,158,218,0.08)}
+.faq-row-header:hover{background:rgba(74,158,218,0.15)}
+.faq-row-q{flex:1;border:none;background:transparent;font-size:12px;font-family:inherit;color:#e8f0f8;outline:none}
+.faq-row-q::placeholder{color:rgba(138,180,212,0.4)}
+.faq-row-arrow{font-size:11px;color:#4a9eda;flex-shrink:0;transition:transform 0.2s}
+.faq-row-arrow.open{transform:rotate(90deg)}
+.faq-row-body{display:none;padding:8px 10px;background:rgba(0,0,0,0.15);border-top:1px solid rgba(255,255,255,0.06)}
+.faq-row-body.open{display:block}
+.faq-row-body textarea{width:100%;border:1px solid rgba(74,158,218,0.2);border-radius:6px;padding:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:72px;background:rgba(255,255,255,0.05);color:#e8f0f8}
+.del-faq-btn{background:none;border:none;color:rgba(220,80,80,0.7);cursor:pointer;font-size:13px;padding:0 4px}
+.add-faq-btn{width:100%;padding:8px;background:rgba(74,158,218,0.08);border:none;border-top:1px solid rgba(255,255,255,0.06);color:#4a9eda;font-size:12px;font-weight:600;cursor:pointer}
+.add-faq-btn:hover{background:rgba(74,158,218,0.15)}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:999;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#0f2845;border:1px solid rgba(74,158,218,0.3);border-radius:16px;padding:28px;width:90%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.5)}
+.modal-title{font-size:16px;font-weight:600;color:#e8f0f8;margin-bottom:20px}
+.modal-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+
+/* 聯絡 */
+.contact-link{text-decoration:none;display:block;text-align:center;padding:14px 8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;cursor:pointer;transition:all 0.2s}
+.contact-link:hover{background:rgba(74,158,218,0.15);border-color:rgba(74,158,218,0.4)}
+.contact-label{font-size:11px;font-weight:600;color:#c8e0f4;display:block;margin-bottom:2px}
+.contact-val{font-size:10px;color:#8ab4d4;word-break:break-all}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 個人檔案 -->
+  <div class="profile-card glass">
+    <div style="position:relative;width:90px;margin:0 auto 16px;">
+      <img id="profileAvatar" src="https://i.postimg.cc/FsPZ0yP1/R0010032.jpg" alt="思誼頭照" class="profile-avatar">
+      <label for="avatarUpload" style="position:absolute;bottom:2px;right:2px;width:24px;height:24px;background:#1a4f8a;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;box-shadow:0 2px 6px rgba(0,0,0,0.4);">📷
+        <input type="file" id="avatarUpload" accept="image/*" style="display:none;">
+      </label>
+    </div>
+    <div class="profile-name">思誼 職能治療師</div>
+    <div class="profile-motto">𓅮 你也是個多元文化ㄉ漂亮寶貝◔.̮◔✧✦</div>
+    <div class="profile-bio">所有常見問題都在這，太多人問了我架了一個網站🚄</div>
+  </div>
+
+  <!-- 資源庫 -->
+  <div class="content-section glass">
+    <div class="section-title">專業資源庫</div>
+    <div class="tabs" id="tabsEl"></div>
+    <div id="quickLinks"></div>
+    <div class="cards-grid" id="cardsContainer"></div>
+  </div>
+
+  <!-- 後台 -->
+  <div class="admin-panel glass">
+    <div class="admin-title">🔧 後台管理（僅你自己可見）</div>
+    <div class="admin-section">
+      <div class="admin-section-title">📂 分類排序（拖曳調整）</div>
+      <ul class="sort-list" id="sortList"></ul>
+    </div>
+    <div class="admin-section-title">➕ 新增卡片</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>主題分類</label>
+        <select id="themeSelect">
+          <option value="">選擇主題...</option>
+          <option value="book">📚 書籍推薦</option>
+          <option value="tool">🛠️ 工具推薦</option>
+          <option value="technique">👶 技巧分享</option>
+          <option value="question">❓ 常見問題</option>
+          <option value="shopping">🛒 團購資訊</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>標題</label>
+        <input type="text" id="titleInput" placeholder="例：怪獸家族">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>推薦理由</label>
+      <textarea id="descriptionInput" placeholder="為什麼推薦這個？"></textarea>
+    </div>
+    <div class="form-group">
+      <label>卡片照片（選填）</label>
+      <div class="upload-area">
+        <input type="file" accept="image/*" id="imageFileInput">
+        <div id="uploadHint" style="font-size:12px;color:rgba(138,180,212,0.6);">點擊或拖曳圖片上傳</div>
+        <img id="uploadPreview" class="upload-preview">
+      </div>
+      <input type="text" id="imageUrlInput" placeholder="或貼上圖片網址 https://..." style="margin-top:6px;width:100%;padding:8px 12px;border:1px solid rgba(74,158,218,0.3);border-radius:6px;font-size:12px;background:rgba(255,255,255,0.06);color:#e8f0f8;font-family:inherit;">
+    </div>
+    <div class="form-group">
+      <label>連結（選填）</label>
+      <input type="text" id="linkInput" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label>FAQ（選填）</label>
+      <div class="faq-editor" id="addFaqEditor"></div>
+      <button class="add-faq-btn" id="addFaqRowBtn">＋ 新增問答</button>
+    </div>
+    <button class="btn" id="submitBtn">新增卡片</button>
+  </div>
+
+  <!-- 聯絡 -->
+  <div class="glass" style="padding:20px 24px;margin-top:24px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <a href="mailto:ot.workflow.shihi@gmail.com" class="contact-link">
+        <div style="font-size:20px;margin-bottom:6px;">📧</div>
+        <span class="contact-label">信箱</span>
+        <span class="contact-val">ot.workflow.shihi@gmail.com</span>
+      </a>
+      <a href="#" id="igLink" class="contact-link">
+        <div style="font-size:20px;margin-bottom:6px;">📱</div>
+        <span class="contact-label">Instagram</span>
+        <span class="contact-val">@ot.workflow</span>
+      </a>
+      <a href="#" id="fbLink" class="contact-link">
+        <div style="font-size:20px;margin-bottom:6px;">📘</div>
+        <span class="contact-label">Facebook</span>
+        <span class="contact-val">ot.workflow</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- 編輯 Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-title">✏️ 編輯卡片</div>
+    <input type="hidden" id="editId">
+    <div class="form-row">
+      <div class="form-group">
+        <label>主題分類</label>
+        <select id="editTheme">
+          <option value="book">📚 書籍推薦</option>
+          <option value="tool">🛠️ 工具推薦</option>
+          <option value="technique">👶 技巧分享</option>
+          <option value="question">❓ 常見問題</option>
+          <option value="shopping">🛒 團購資訊</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>標題</label>
+        <input type="text" id="editTitle">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>推薦理由</label>
+      <textarea id="editDescription"></textarea>
+    </div>
+    <div class="form-group">
+      <label>卡片照片</label>
+      <div class="upload-area">
+        <input type="file" accept="image/*" id="editImageFileInput">
+        <div id="editUploadHint" style="font-size:12px;color:rgba(138,180,212,0.6);">點擊或拖曳圖片上傳</div>
+        <img id="editUploadPreview" class="upload-preview">
+      </div>
+      <input type="text" id="editImageUrl" placeholder="或貼上圖片網址 https://..." style="margin-top:6px;width:100%;padding:8px 12px;border:1px solid rgba(74,158,218,0.3);border-radius:6px;font-size:12px;background:rgba(255,255,255,0.06);color:#e8f0f8;font-family:inherit;">
+    </div>
+    <div class="form-group">
+      <label>連結（選填）</label>
+      <input type="text" id="editLink" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label>FAQ</label>
+      <div class="faq-editor" id="editFaqEditor"></div>
+      <button class="add-faq-btn" id="editAddFaqRowBtn">＋ 新增問答</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn secondary" id="cancelEditBtn">取消</button>
+      <button class="btn" id="saveEditBtn">儲存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const THEME_COLORS={book:{dot:'#6c9ebf',label:'📚 書籍推薦'},tool:{dot:'#52b788',label:'🛠️ 工具推薦'},technique:{dot:'#f4a261',label:'👶 技巧分享'},question:{dot:'#9b72cf',label:'❓ 常見問題'},shopping:{dot:'#e07a98',label:'🛒 團購資訊'}};
+let tabOrder=[{key:'all',label:'全部'},{key:'book',label:'📚 書籍推薦'},{key:'tool',label:'🛠️ 工具推薦'},{key:'technique',label:'👶 技巧分享'},{key:'question',label:'❓ 常見問題'},{key:'shopping',label:'🛒 團購資訊'}];
+let cardsData=[
+  {id:1,theme:'book',title:'怪獸家族',description:'透過溫暖的故事幫助孩子理解情緒，家長超適合讀給孩子聽。',link:'https://instagram.com/ot.workflow',image:null,faqs:[]},
+  {id:2,theme:'shopping',title:'握筆器團購',description:'職能治療師精選握筆器，幫助孩子建立正確握筆姿勢。',link:'https://instagram.com/ot.workflow',image:null,faqs:[{q:'0.7mm 和 1.3mm 差在哪裡？',a:'差在筆芯直徑。\n🟠 1.3mm（較粗）→ 寫字很輕的孩子\n🟠 0.7mm（較細）→ 運筆姿勢不對或寫字很大力的孩子'},{q:'有分左右手嗎？',a:'有！左手版和右手版都有，購買時請備註孩子慣用手。'},{q:'可以換其他鉛筆嗎？',a:'✅ Lyra 粗三角 → 最剛好\n⚠️ 墊腳石小牌子 → 稍鬆但可用\n❌ 公文版、Food 超人 → 不適合'},{q:'適合幾歲？',a:'一般建議 3 歲以上，視握力發展狀況調整。'}]},
+  {id:3,theme:'tool',title:'倒數計時器',description:'幫助孩子建立時間感，減少轉換困難與情緒崩潰，OT 診所常用款。',link:'https://instagram.com/ot.workflow',image:null,faqs:[{q:'建議買幾分鐘的？',a:'・日常切換 → 5分鐘\n・作業閱讀 → 10～15分鐘\n・洗澡出門 → 3分鐘'},{q:'哪個款式有附矽膠套？',a:'紅色旋轉款有附矽膠保護套，適合容易摔東西的孩子。'},{q:'什麼時候開團？',a:'目前已結束，下次開團會在 IG 限動公告 @ot.workflow'}]},
+];
+let currentFilter='all',newImageDataUrl=null,editImageDataUrl=null;
+
+function addFaqRow(editorId,q,a){
+  q=q||'';a=a||'';
+  const editor=document.getElementById(editorId);
+  const row=document.createElement('div');row.className='faq-row';
+  const header=document.createElement('div');header.className='faq-row-header';
+  const qInput=document.createElement('input');qInput.className='faq-row-q';qInput.type='text';qInput.placeholder='點此輸入問題...';qInput.value=q;
+  const delBtn=document.createElement('button');delBtn.className='del-faq-btn';delBtn.type='button';delBtn.textContent='✕';
+  delBtn.addEventListener('click',function(e){e.stopPropagation();row.remove();});
+  const arrow=document.createElement('span');arrow.className='faq-row-arrow';arrow.textContent='▶';
+  header.appendChild(qInput);header.appendChild(delBtn);header.appendChild(arrow);
+  const body=document.createElement('div');body.className='faq-row-body';
+  const aText=document.createElement('textarea');aText.placeholder='在這裡輸入答案...';aText.value=a;
+  body.appendChild(aText);
+  header.addEventListener('click',function(e){if(e.target===qInput||e.target===delBtn)return;body.classList.toggle('open');arrow.classList.toggle('open');});
+  row.appendChild(header);row.appendChild(body);editor.appendChild(row);
+  if(!a){body.classList.add('open');arrow.classList.add('open');setTimeout(function(){aText.focus();},50);}
+}
+function getFaqsFromEditor(id){const rows=document.querySelectorAll('#'+id+' .faq-row');const f=[];rows.forEach(function(r){const q=r.querySelector('.faq-row-q').value.trim();const a=r.querySelector('textarea').value.trim();if(q)f.push({q:q,a:a});});return f;}
+function clearFaqEditor(id){document.querySelectorAll('#'+id+' .faq-row').forEach(function(r){r.remove();});}
+function loadFaqsToEditor(id,faqs){clearFaqEditor(id);(faqs||[]).forEach(function(f){addFaqRow(id,f.q,f.a);});}
+
+function renderTabs(){
+  const el=document.getElementById('tabsEl');el.innerHTML='';
+  tabOrder.forEach(function(t){
+    const btn=document.createElement('button');btn.className='tab-btn'+(currentFilter===t.key?' active':'');
+    btn.textContent=t.label;
+    btn.addEventListener('click',function(){currentFilter=t.key;renderTabs();renderCards();});
+    el.appendChild(btn);
+  });
+}
+
+function renderCards(){
+  const container=document.getElementById('cardsContainer');
+  const quickLinks=document.getElementById('quickLinks');
+  container.innerHTML='';quickLinks.innerHTML='';
+  const list=currentFilter==='all'?cardsData:cardsData.filter(function(c){return c.theme===currentFilter;});
+  if(currentFilter!=='all'&&list.length>1){
+    quickLinks.style.display='flex';
+    list.forEach(function(card){
+      const a=document.createElement('span');
+      a.textContent=card.title;
+      a.style.cssText='font-size:11px;color:#4a9eda;padding:3px 10px;background:rgba(74,158,218,0.1);border:1px solid rgba(74,158,218,0.3);border-radius:20px;cursor:pointer;white-space:nowrap;transition:all 0.2s;';
+      a.addEventListener('mouseover',function(){this.style.background='rgba(74,158,218,0.2)';});
+      a.addEventListener('mouseout',function(){this.style.background='rgba(74,158,218,0.1)';});
+      a.addEventListener('click',function(){const t=document.getElementById('card-'+card.id);if(t)t.scrollIntoView({behavior:'smooth',block:'center'});});
+      quickLinks.appendChild(a);
+    });
+  } else {quickLinks.style.display='none';}
+
+  list.forEach(function(card){
+    const faqHtml=(card.faqs&&card.faqs.length)?'<div class="faq-list">'+card.faqs.map(function(f){return'<div class="faq-item"><button class="faq-q">'+f.q+'<span class="faq-toggle">＋</span></button><div class="faq-a">'+f.a+'</div></div>';}).join('')+'</div>':'';
+    let igDeepLink=null;
+    if(card.theme==='technique'&&card.link){const m=card.link.match(/instagram\.com\/(?:reel|p|tv)\/([A-Za-z0-9_-]+)/);if(m)igDeepLink='instagram://media?id='+m[1];}
+    const imgSrc=card.image||null;
+    let imageBlock;
+    if(imgSrc&&igDeepLink){imageBlock='<div class="card-image" style="cursor:pointer;position:relative;" data-ig="'+igDeepLink+'" data-url="'+card.link+'"><img src="'+imgSrc+'" alt="'+card.title+'"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);border-radius:8px;"><div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;"><div style="width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:15px solid white;margin-left:3px;"></div></div></div></div>';}
+    else if(imgSrc){imageBlock='<div class="card-image"><img src="'+imgSrc+'" alt="'+card.title+'"></div>';}
+    else{imageBlock='<div class="card-image">📌</div>';}
+    let linkBlock='';
+    if(card.link&&igDeepLink)linkBlock='<a class="card-link" data-ig="'+igDeepLink+'" data-url="'+card.link+'" href="#">▶ IG 影片 →</a>';
+    const el=document.createElement('div');el.className='card';el.id='card-'+card.id;el.dataset.theme=card.theme;
+    el.innerHTML=imageBlock+'<div class="card-title">'+card.title+'</div><div class="card-desc">'+card.description+'</div>'+faqHtml+linkBlock+'<div class="card-actions"><button class="btn edit" data-edit="'+card.id+'" style="flex:1">✏️ 編輯</button><button class="btn delete" data-del="'+card.id+'" style="flex:1">刪除</button></div>';
+    container.appendChild(el);
+  });
+
+  container.addEventListener('click',function(e){
+    const faqQ=e.target.closest('.faq-q');
+    if(faqQ){const a=faqQ.nextElementSibling;a.classList.toggle('open');faqQ.querySelector('.faq-toggle').textContent=a.classList.contains('open')?'－':'＋';return;}
+    const igEl=e.target.closest('[data-ig]');
+    if(igEl){e.preventDefault();openSocial(igEl.dataset.ig||igEl.dataset.url,igEl.dataset.url||igEl.dataset.fb);return;}
+    const editBtn=e.target.closest('[data-edit]');
+    if(editBtn){openEdit(parseInt(editBtn.dataset.edit));return;}
+    const delBtn=e.target.closest('[data-del]');
+    if(delBtn){if(confirm('確定要刪除嗎？')){cardsData=cardsData.filter(function(c){return c.id!==parseInt(delBtn.dataset.del);});renderCards();}return;}
+  });
+}
+
+function openSocial(deepLink,fallback){
+  if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)){window.location.href=deepLink;setTimeout(function(){window.open(fallback,'_blank');},1200);}
+  else window.open(fallback,'_blank');
+}
+
+document.getElementById('submitBtn').addEventListener('click',function(){
+  const theme=document.getElementById('themeSelect').value;
+  const title=document.getElementById('titleInput').value.trim();
+  const desc=document.getElementById('descriptionInput').value.trim();
+  if(!theme){alert('❌ 請選擇主題分類');return;}
+  if(!title){alert('❌ 請填寫標題');return;}
+  if(!desc){alert('❌ 請填寫推薦理由');return;}
+  const urlVal=document.getElementById('imageUrlInput').value.trim();
+  cardsData.push({id:Math.max(0,...cardsData.map(function(c){return c.id;}))+1,theme:theme,title:title,description:desc,link:document.getElementById('linkInput').value.trim()||null,image:newImageDataUrl||urlVal||null,faqs:getFaqsFromEditor('addFaqEditor')});
+  document.getElementById('themeSelect').value='';
+  document.getElementById('titleInput').value='';
+  document.getElementById('descriptionInput').value='';
+  document.getElementById('linkInput').value='';
+  document.getElementById('imageUrlInput').value='';
+  document.getElementById('uploadPreview').style.display='none';
+  document.getElementById('uploadHint').style.display='block';
+  clearFaqEditor('addFaqEditor');newImageDataUrl=null;renderCards();alert('✅ 新增成功！');
+});
+
+document.getElementById('addFaqRowBtn').addEventListener('click',function(){addFaqRow('addFaqEditor','','');});
+
+function openEdit(id){
+  const card=cardsData.find(function(c){return c.id===id;});if(!card)return;
+  editImageDataUrl=null;
+  document.getElementById('editId').value=id;
+  document.getElementById('editTheme').value=card.theme;
+  document.getElementById('editTitle').value=card.title;
+  document.getElementById('editDescription').value=card.description;
+  document.getElementById('editLink').value=card.link||'';
+  document.getElementById('editImageUrl').value=(!card.image||card.image.startsWith('data:'))?'':card.image;
+  const prev=document.getElementById('editUploadPreview');const hint=document.getElementById('editUploadHint');
+  if(card.image){prev.src=card.image;prev.style.display='block';hint.style.display='none';}
+  else{prev.style.display='none';hint.style.display='block';}
+  loadFaqsToEditor('editFaqEditor',card.faqs);
+  document.getElementById('editModal').classList.add('open');
+}
+document.getElementById('editAddFaqRowBtn').addEventListener('click',function(){addFaqRow('editFaqEditor','','');});
+document.getElementById('cancelEditBtn').addEventListener('click',function(){document.getElementById('editModal').classList.remove('open');});
+document.getElementById('saveEditBtn').addEventListener('click',function(){
+  const id=parseInt(document.getElementById('editId').value);
+  const idx=cardsData.findIndex(function(c){return c.id===id;});if(idx===-1)return;
+  const urlVal=document.getElementById('editImageUrl').value.trim();
+  cardsData[idx]={...cardsData[idx],theme:document.getElementById('editTheme').value,title:document.getElementById('editTitle').value,description:document.getElementById('editDescription').value,link:document.getElementById('editLink').value||null,image:editImageDataUrl||urlVal||cardsData[idx].image||null,faqs:getFaqsFromEditor('editFaqEditor')};
+  document.getElementById('editModal').classList.remove('open');renderCards();
+});
+document.getElementById('editModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+
+document.getElementById('imageFileInput').addEventListener('change',function(){const file=this.files[0];if(!file)return;const r=new FileReader();r.onload=function(e){document.getElementById('uploadPreview').src=e.target.result;document.getElementById('uploadPreview').style.display='block';document.getElementById('uploadHint').style.display='none';newImageDataUrl=e.target.result;document.getElementById('imageUrlInput').value='';};r.readAsDataURL(file);});
+document.getElementById('editImageFileInput').addEventListener('change',function(){const file=this.files[0];if(!file)return;const r=new FileReader();r.onload=function(e){document.getElementById('editUploadPreview').src=e.target.result;document.getElementById('editUploadPreview').style.display='block';document.getElementById('editUploadHint').style.display='none';editImageDataUrl=e.target.result;document.getElementById('editImageUrl').value='';};r.readAsDataURL(file);});
+document.getElementById('avatarUpload').addEventListener('change',function(){const file=this.files[0];if(!file)return;const r=new FileReader();r.onload=function(e){document.getElementById('profileAvatar').src=e.target.result;};r.readAsDataURL(file);});
+
+function renderSortList(){
+  const list=document.getElementById('sortList');list.innerHTML='';
+  tabOrder.filter(function(t){return t.key!=='all';}).forEach(function(t){
+    const li=document.createElement('li');li.className='sort-item';li.draggable=true;li.dataset.key=t.key;
+    const dot=THEME_COLORS[t.key]?THEME_COLORS[t.key].dot:'#ccc';
+    li.innerHTML='<span class="drag-handle">⠿</span><span class="theme-dot" style="background:'+dot+'"></span>'+t.label;
+    li.addEventListener('dragstart',function(){li.classList.add('dragging');});
+    li.addEventListener('dragend',function(){li.classList.remove('dragging');const newOrder=[tabOrder[0]];list.querySelectorAll('.sort-item').forEach(function(el){const found=tabOrder.find(function(t){return t.key===el.dataset.key;});if(found)newOrder.push(found);});tabOrder=newOrder;renderTabs();renderCards();});
+    li.addEventListener('dragover',function(e){e.preventDefault();const dragging=list.querySelector('.dragging');if(dragging&&dragging!==li){const mid=li.getBoundingClientRect().top+li.getBoundingClientRect().height/2;if(e.clientY<mid)list.insertBefore(dragging,li);else li.insertAdjacentElement('afterend',dragging);}});
+    list.appendChild(li);
+  });
+}
+
+document.getElementById('igLink').addEventListener('click',function(e){e.preventDefault();openSocial('instagram://user?username=ot.workflow','https://www.instagram.com/ot.workflow');});
+document.getElementById('fbLink').addEventListener('click',function(e){e.preventDefault();openSocial('fb://page/ot.workflow','https://www.facebook.com/ot.workflow');});
+
+renderTabs();renderCards();renderSortList();
+</script>
+</body>
+</html>
