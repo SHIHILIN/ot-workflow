@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OT Workflow | 思誼職能治療師</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: #0d2137;
+      color: #e8f0f8;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 20% 20%, rgba(26, 79, 138, 0.4) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 80%, rgba(13, 43, 65, 0.6) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+    
+    .glass {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+    }
+    
+    .profile-card { padding: 28px 24px; margin-bottom: 24px; text-align: center; }
+    .profile-avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(100, 160, 220, 0.5);
+      box-shadow: 0 0 20px rgba(26, 79, 138, 0.4);
+      display: block;
+      margin: 0 auto;
+    }
+    .profile-name { font-size: 20px; font-weight: 600; color: #e8f0f8; margin-bottom: 4px; }
+    .profile-motto {
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 3px solid #4a9eda;
+      padding: 10px 14px;
+      margin: 12px 0;
+      font-size: 13px;
+      color: #b8d4f0;
+      border-radius: 6px;
+      line-height: 1.6;
+    }
+    
+    .content-section { padding: 28px; margin-bottom: 24px; }
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #e8f0f8;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .tab-btn {
+      padding: 7px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      color: #8ab4d4;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { border-color: rgba(74, 158, 218, 0.5); background: rgba(74, 158, 218, 0.1); color: #c8e0f4; }
+    .tab-btn.active { background: rgba(26, 79, 138, 0.6); color: white; border-color: rgba(74, 158, 218, 0.6); }
+    
+    .subtitle-nav { display: flex; flex-wrap: wrap; gap: 8px; }
+    .subtitle-item {
+      padding: 6px 12px;
+      background: rgba(74, 158, 218, 0.15);
+      border: 1px solid rgba(74, 158, 218, 0.3);
+      border-radius: 6px;
+      color: #4a9eda;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+    .subtitle-item:hover {
+      background: rgba(74, 158, 218, 0.3);
+      border-color: rgba(74, 158, 218, 0.6);
+      transform: translateY(-2px);
+    }
+    
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .card {
+      border-radius: 12px;
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      border-color: rgba(74, 158, 218, 0.4);
+      background: rgba(255, 255, 255, 0.09);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+    .card.highlight {
+      border-color: rgba(74, 158, 218, 0.8);
+      background: rgba(74, 158, 218, 0.15);
+      box-shadow: 0 0 20px rgba(74, 158, 218, 0.4);
+    }
+    .card[data-theme="book"] { border-left: 3px solid #6c9ebf; }
+    .card[data-theme="tool"] { border-left: 3px solid #52b788; }
+    .card[data-theme="technique"] { border-left: 3px solid #f4a261; }
+    .card[data-theme="question"] { border-left: 3px solid #9b72cf; }
+    .card[data-theme="shopping"] { border-left: 3px solid #e07a98; }
+    
+    .card-header { cursor: pointer; }
+    .card-title { font-size: 15px; font-weight: 600; color: #e8f0f8; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+    .status-badge { 
+      font-size: 10px; 
+      padding: 3px 8px; 
+      border-radius: 4px; 
+      font-weight: 600;
+      margin-left: auto;
+    }
+    .status-permanent { background: rgba(74, 200, 100, 0.3); color: #7cfc8a; }
+    .status-active { background: rgba(74, 158, 218, 0.3); color: #4a9eda; }
+    .status-ended { background: rgba(224, 122, 152, 0.3); color: #ff9abc; }
+    
+    .card-desc { font-size: 12px; color: #8ab4d4; margin-bottom: 12px; line-height: 1.5; }
+    
+    .card-links { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .card-link {
+      font-size: 11px;
+      padding: 6px 10px;
+      background: rgba(74, 158, 218, 0.2);
+      border: 1px solid rgba(74, 158, 218, 0.3);
+      border-radius: 4px;
+      color: #4a9eda;
+      text-decoration: none;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .card-link:hover { background: rgba(74, 158, 218, 0.4); border-color: rgba(74, 158, 218, 0.6); }
+    
+    .faq-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+    .faq-toggle-btn {
+      width: 100%;
+      padding: 8px;
+      background: rgba(74, 158, 218, 0.1);
+      border: 1px solid rgba(74, 158, 218, 0.3);
+      border-radius: 4px;
+      color: #4a9eda;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .faq-toggle-btn:hover { background: rgba(74, 158, 218, 0.3); }
+    
+    .faq-items { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; margin-top: 8px; }
+    .faq-items.open { max-height: 500px; }
+    
+    .faq-item { margin-bottom: 8px; }
+    .faq-question {
+      font-size: 11px;
+      font-weight: 600;
+      color: #b8d4f0;
+      padding: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .faq-question:hover { background: rgba(255, 255, 255, 0.08); }
+    .faq-toggle { display: inline-block; width: 16px; text-align: center; transition: transform 0.3s; }
+    .faq-item.open .faq-toggle { transform: rotate(180deg); }
+    
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      font-size: 11px;
+      color: #8ab4d4;
+      padding: 0 6px;
+    }
+    .faq-item.open .faq-answer { max-height: 300px; padding: 6px; }
+    .faq-answer-text { white-space: pre-wrap; word-wrap: break-word; line-height: 1.4; }
+    
+    .control-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 10px 16px;
+      background: rgba(74, 158, 218, 0.3);
+      border: 1px solid rgba(74, 158, 218, 0.5);
+      border-radius: 6px;
+      color: #e8f0f8;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: rgba(74, 158, 218, 0.5); }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.open { display: flex; }
+    .modal-content {
+      background: #0d2137;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 12px; margin-bottom: 4px; color: #8ab4d4; }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      color: #e8f0f8;
+      font-family: inherit;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .btn-group { display: flex; gap: 8px; margin-top: 16px; }
+    .btn-group button { flex: 1; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 個人資料卡片 -->
+    <div class="profile-card glass">
+      <img id="profileAvatar" class="profile-avatar" src="https://i.postimg.cc/FsPZ0yP1/R0010032.jpg" alt="Avatar">
+      <div class="profile-name">思誼職能治療師</div>
+      <div class="profile-motto">幫助孩子發展潛能 💚</div>
+    </div>
+
+    <!-- 控制欄 -->
+    <div class="control-bar">
+      <button class="btn" id="addBtn">➕ 新增卡片</button>
+      <button class="btn" id="exportBtn">💾 匯出數據</button>
+      <button class="btn" id="importBtn">📂 匯入數據</button>
+      <input type="file" id="importInput" accept=".json" style="display: none;">
+    </div>
+
+    <!-- 標籤頁 -->
+    <div class="content-section glass">
+      <div class="section-title">選擇分類</div>
+      <div class="tabs" id="tabsContainer"></div>
+    </div>
+
+    <!-- 子標題導航 -->
+    <div class="content-section glass" id="subtitleNavSection" style="display: none;">
+      <div class="section-title" id="subtitleNavTitle"></div>
+      <div class="subtitle-nav" id="subtitleNavContainer"></div>
+    </div>
+
+    <!-- 卡片網格 -->
+    <div class="cards-grid" id="cardsContainer"></div>
+  </div>
+
+  <!-- 新增/編輯卡片模態 -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <div class="modal-title" id="modalTitle">新增卡片</div>
+      <form id="editForm">
+        <div class="form-group">
+          <label>分類</label>
+          <select id="editTheme" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #e8f0f8;">
+            <option value="shopping">購物</option>
+            <option value="book">書籍</option>
+            <option value="tool">工具</option>
+            <option value="technique">技巧</option>
+            <option value="question">問題</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>狀態</label>
+          <select id="editStatus" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #e8f0f8;">
+            <option value="永久商品">永久商品</option>
+            <option value="開團中">開團中</option>
+            <option value="團購已結束">團購已結束</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>標題</label>
+          <input type="text" id="editTitle" required>
+        </div>
+        <div class="form-group">
+          <label>描述</label>
+          <textarea id="editDesc" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>連結</label>
+          <div id="linksContainer" style="margin-top: 8px;"></div>
+          <button type="button" class="btn" onclick="addLink()" style="margin-top: 8px; width: 100%;">➕ 新增連結</button>
+        </div>
+        <div class="form-group">
+          <label>FAQ（換行分隔，格式：問題 | 答案）</label>
+          <textarea id="editFaqs" placeholder="問題1 | 答案1&#10;問題2 | 答案2"></textarea>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn" id="saveBtnModal">保存</button>
+          <button type="button" class="btn" id="deleteBtnModal">刪除</button>
+          <button type="button" class="btn" onclick="document.getElementById('editModal').classList.remove('open')">取消</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let cardsData = [];
+    let tabOrder = [
+      { key: 'all', label: '📋 全部' },
+      { key: 'shopping', label: '🛍️ 團購' },
+      { key: 'book', label: '📚 書籍推薦' },
+      { key: 'technique', label: '👶 技巧分享' },
+      { key: 'question', label: '❓ 常見問題' },
+      { key: 'course', label: '🎓 找我上課' }
+    ];
+    let currentTab = 'all';
+    let editingId = null;
+
+    // 動態連結編輯
+    let editingLinks = [];
+
+    function renderLinks() {
+      const container = document.getElementById('linksContainer');
+      if (!container) return; // 容器不存在就退出
+      
+      container.innerHTML = ''; // 先清空
+      
+      if (!editingLinks || editingLinks.length === 0) {
+        // 如果沒有連結，顯示提示
+        container.innerHTML = '<p style="color: #8ab4d4; font-size: 12px;">還沒有連結，點下方按鈕新增</p>';
+      } else {
+        editingLinks.forEach((link, index) => {
+          const linkEl = document.createElement('div');
+          linkEl.style.display = 'flex';
+          linkEl.style.gap = '8px';
+          linkEl.style.marginBottom = '8px';
+          linkEl.style.alignItems = 'flex-start';
+          
+          linkEl.innerHTML = `
+            <div style="flex: 0 0 120px;">
+              <input type="text" placeholder="標籤" value="${link.label}" data-link-label="${index}" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #e8f0f8;">
+            </div>
+            <div style="flex: 1;">
+              <input type="text" placeholder="https://..." value="${link.url}" data-link-url="${index}" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #e8f0f8;">
+            </div>
+            <button type="button" class="btn" onclick="removeLink(${index})" style="flex: 0 0 auto; padding: 8px 12px;">✕</button>
+          `;
+          
+          container.appendChild(linkEl);
+        });
+        
+        // 綁定輸入框事件
+        document.querySelectorAll('[data-link-label]').forEach(input => {
+          input.onchange = (e) => {
+            const index = parseInt(e.target.dataset.linkLabel);
+            editingLinks[index].label = e.target.value;
+          };
+        });
+        
+        document.querySelectorAll('[data-link-url]').forEach(input => {
+          input.onchange = (e) => {
+            const index = parseInt(e.target.dataset.linkUrl);
+            editingLinks[index].url = e.target.value;
+          };
+        });
+      }
+    }
+
+    function addLink() {
+      editingLinks.push({ label: '', url: '' });
+      renderLinks();
+    }
+
+    function removeLink(index) {
+      editingLinks.splice(index, 1);
+      renderLinks();
+    }
+
+    // 初始化 - 從 index.json 載入數據
+    async function loadData() {
+      try {
+        const response = await fetch('index.json');
+        const data = await response.json();
+        cardsData = data.cardsData || [];
+        if (data.tabOrder) tabOrder = data.tabOrder;
+        renderTabs();
+        renderCards();
+        renderSubtitleNav();
+      } catch (err) {
+        console.log('未找到index.json，使用預設數據');
+        renderTabs();
+        renderCards();
+        renderSubtitleNav();
+      }
+    }
+
+    function renderTabs() {
+      const container = document.getElementById('tabsContainer');
+      container.innerHTML = '';
+      tabOrder.forEach(tab => {
+        const btn = document.createElement('button');
+        btn.className = 'tab-btn';
+        if (tab.key === currentTab) btn.classList.add('active');
+        btn.textContent = tab.label;
+        btn.onclick = () => { 
+          currentTab = tab.key; 
+          renderTabs(); 
+          renderCards();
+          renderSubtitleNav();
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function renderSubtitleNav() {
+      const section = document.getElementById('subtitleNavSection');
+      const titleEl = document.getElementById('subtitleNavTitle');
+      const container = document.getElementById('subtitleNavContainer');
+      
+      if (currentTab === 'all') {
+        section.style.display = 'none';
+        return;
+      }
+      
+      const filtered = cardsData.filter(c => c.theme === currentTab);
+      
+      if (filtered.length === 0) {
+        section.style.display = 'none';
+        return;
+      }
+      
+      section.style.display = 'block';
+      
+      const tabLabel = tabOrder.find(t => t.key === currentTab)?.label || currentTab;
+      titleEl.textContent = `${tabLabel} - 快速導航`;
+      
+      container.innerHTML = filtered.map((card, idx) => `
+        <div class="subtitle-item" onclick="scrollToCard(${card.id})">${card.title}</div>
+      `).join('');
+    }
+
+    function scrollToCard(cardId) {
+      const card = document.querySelector(`[data-card-id="${cardId}"]`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('highlight');
+        setTimeout(() => card.classList.remove('highlight'), 2000);
+      }
+    }
+
+    function renderCards() {
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+      const filtered = currentTab === 'all' ? cardsData : cardsData.filter(c => c.theme === currentTab);
+      filtered.forEach(card => {
+        const el = document.createElement('div');
+        el.className = 'card glass';
+        el.dataset.theme = card.theme;
+        el.dataset.cardId = card.id;
+        
+        // 狀態徽章
+        let statusClass = '';
+        if (card.status === '永久商品') statusClass = 'status-permanent';
+        else if (card.status === '開團中') statusClass = 'status-active';
+        else statusClass = 'status-ended';
+        
+        let faqHTML = '';
+        if (card.faqs && card.faqs.length > 0) {
+          const faqItems = card.faqs.map((faq, idx) => `
+            <div class="faq-item" data-faq-index="${idx}">
+              <div class="faq-question">
+                <span>${faq.q}</span>
+                <span class="faq-toggle">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-text">${faq.a}</div>
+              </div>
+            </div>
+          `).join('');
+          
+          faqHTML = `
+            <div class="faq-section">
+              <button class="faq-toggle-btn" data-toggle="faq">❓ 常見問題 (${card.faqs.length})</button>
+              <div class="faq-items">
+                ${faqItems}
+              </div>
+            </div>
+          `;
+        }
+        
+        el.innerHTML = `
+          <div class="card-header" onclick="openEdit(${card.id})">
+            <div class="card-title">
+              ${card.title}
+              ${card.status ? `<span class="status-badge ${statusClass}">${card.status}</span>` : ''}
+            </div>
+            <div class="card-desc">${card.description}</div>
+          </div>
+          <div class="card-links">
+            ${(card.links || []).map(link => `<a href="${link.url}" class="card-link" target="_blank">${link.label}</a>`).join('')}
+          </div>
+          ${faqHTML}
+        `;
+        
+        // 綁定 FAQ 展開按鈕
+        const faqToggleBtn = el.querySelector('[data-toggle="faq"]');
+        if (faqToggleBtn) {
+          faqToggleBtn.onclick = (e) => {
+            e.stopPropagation();
+            const faqItems = el.querySelector('.faq-items');
+            faqItems.classList.toggle('open');
+          };
+          
+          // 綁定 FAQ 項目點擊
+          el.querySelectorAll('.faq-question').forEach(q => {
+            q.onclick = (e) => {
+              e.stopPropagation();
+              const item = q.closest('.faq-item');
+              item.classList.toggle('open');
+            };
+          });
+        }
+        
+        container.appendChild(el);
+      });
+    }
+
+    function openEdit(id) {
+      const card = cardsData.find(c => c.id === id);
+      editingId = id;
+      
+      if (card) {
+        // 編輯現有卡片
+        document.getElementById('modalTitle').textContent = '編輯卡片';
+        document.getElementById('editTheme').value = card.theme;
+        document.getElementById('editStatus').value = card.status || '永久商品';
+        document.getElementById('editTitle').value = card.title;
+        document.getElementById('editDesc').value = card.description;
+        document.getElementById('editFaqs').value = (card.faqs || []).map(f => `${f.q} | ${f.a}`).join('\n');
+        document.getElementById('deleteBtnModal').style.display = 'block';
+        
+        editingLinks = JSON.parse(JSON.stringify(card.links || []));
+      } else {
+        // 新增卡片
+        document.getElementById('modalTitle').textContent = '新增卡片';
+        document.getElementById('editTheme').value = 'shopping';
+        document.getElementById('editStatus').value = '永久商品';
+        document.getElementById('editTitle').value = '';
+        document.getElementById('editDesc').value = '';
+        document.getElementById('editFaqs').value = '';
+        document.getElementById('deleteBtnModal').style.display = 'none';
+        
+        editingLinks = [];
+        editingId = null;
+      }
+      
+      // 打開模態框
+      document.getElementById('editModal').classList.add('open');
+      
+      // 延遲渲染連結，確保DOM準備好
+      setTimeout(() => {
+        renderLinks();
+      }, 50);
+    }
+
+    document.getElementById('addBtn').onclick = () => openEdit(null);
+
+    document.getElementById('saveBtnModal').onclick = () => {
+      const theme = document.getElementById('editTheme').value;
+      const status = document.getElementById('editStatus').value;
+      const title = document.getElementById('editTitle').value;
+      const desc = document.getElementById('editDesc').value;
+      const faqsText = document.getElementById('editFaqs').value;
+      
+      // 收集最新的連結數據（防止輸入框未觸發onchange）
+      const links = [];
+      document.querySelectorAll('[data-link-label]').forEach((input, index) => {
+        const label = input.value;
+        const urlInput = document.querySelector(`[data-link-url="${index}"]`);
+        const url = urlInput ? urlInput.value : '';
+        if (label || url) {
+          links.push({ label, url });
+        }
+      });
+      
+      const faqs = faqsText.split('\n').filter(f => f.trim()).map(f => {
+        const [q, a] = f.split('|').map(s => s.trim());
+        return { q, a };
+      });
+
+      if (editingId) {
+        const card = cardsData.find(c => c.id === editingId);
+        if (card) {
+          card.theme = theme;
+          card.status = status;
+          card.title = title;
+          card.description = desc;
+          card.links = links;
+          card.faqs = faqs;
+        }
+      } else {
+        cardsData.push({
+          id: Date.now(),
+          theme,
+          status,
+          title,
+          description: desc,
+          links,
+          faqs
+        });
+      }
+      document.getElementById('editModal').classList.remove('open');
+      renderCards();
+      renderSubtitleNav();
+    };
+
+    document.getElementById('deleteBtnModal').onclick = () => {
+      if (editingId && confirm('確定刪除此卡片？')) {
+        cardsData = cardsData.filter(c => c.id !== editingId);
+        document.getElementById('editModal').classList.remove('open');
+        renderCards();
+        renderSubtitleNav();
+      }
+    };
+
+    document.getElementById('exportBtn').onclick = () => {
+      const data = {
+        version: 1,
+        avatar: document.getElementById('profileAvatar').src,
+        cardsData,
+        nav: tabOrder
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ot-workflow-backup.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    document.getElementById('importBtn').onclick = () => document.getElementById('importInput').click();
+
+    document.getElementById('importInput').onchange = function() {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.cardsData) cardsData = data.cardsData;
+          if (data.nav) tabOrder = data.nav;
+          renderTabs();
+          renderCards();
+          renderSubtitleNav();
+          alert('✅ 匯入成功！');
+        } catch (err) {
+          alert('❌ 匯入失敗');
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    document.getElementById('editModal').onclick = (e) => {
+      if (e.target === document.getElementById('editModal')) {
+        document.getElementById('editModal').classList.remove('open');
+      }
+    };
+
+    loadData();
+  </script>
+</body>
+</html>
