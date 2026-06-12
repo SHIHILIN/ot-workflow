@@ -54,6 +54,12 @@
       border-radius: 6px;
       line-height: 1.6;
     }
+    .profile-bio {
+      font-size: 13px;
+      color: #8ab4d4;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
     
     .content-section { padding: 28px; margin-bottom: 24px; }
     .section-title {
@@ -90,6 +96,7 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       transition: all 0.3s;
+      cursor: pointer;
     }
     .card:hover {
       border-color: rgba(74, 158, 218, 0.4);
@@ -102,6 +109,7 @@
     .card[data-theme="technique"] { border-left: 3px solid #f4a261; }
     .card[data-theme="question"] { border-left: 3px solid #9b72cf; }
     .card[data-theme="shopping"] { border-left: 3px solid #e07a98; }
+    .card[data-theme="course"] { border-left: 3px solid #4a9eda; }
     
     .card-title { font-size: 15px; font-weight: 600; color: #e8f0f8; margin-bottom: 6px; }
     .card-desc { font-size: 12px; color: #8ab4d4; margin-bottom: 10px; line-height: 1.5; }
@@ -120,12 +128,32 @@
     }
     .card-link:hover { background: rgba(74, 158, 218, 0.4); border-color: rgba(74, 158, 218, 0.6); }
     
-    .control-bar {
-      display: flex;
-      gap: 10px;
+    .contact-section {
+      padding: 20px 24px;
       margin-bottom: 24px;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
     }
+    .contact-link {
+      text-align: center;
+      padding: 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.2s;
+      color: #8ab4d4;
+    }
+    .contact-link:hover {
+      background: rgba(74, 158, 218, 0.2);
+      border-color: rgba(74, 158, 218, 0.4);
+      color: #c8e0f4;
+    }
+    .contact-icon { font-size: 20px; margin-bottom: 6px; }
+    .contact-label { font-size: 11px; display: block; color: #8ab4d4; }
+    .contact-val { font-size: 10px; display: block; color: #6a8cb4; margin-top: 2px; }
+    
     .btn {
       padding: 10px 16px;
       background: rgba(74, 158, 218, 0.3);
@@ -155,13 +183,13 @@
       padding: 24px;
       max-width: 500px;
       width: 90%;
-      max-height: 80vh;
+      max-height: 90vh;
       overflow-y: auto;
     }
     .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 12px; margin-bottom: 4px; color: #8ab4d4; }
-    .form-group input, .form-group textarea {
+    .form-group input, .form-group textarea, .form-group select {
       width: 100%;
       padding: 8px;
       background: rgba(255, 255, 255, 0.08);
@@ -173,6 +201,23 @@
     .form-group textarea { resize: vertical; min-height: 80px; }
     .btn-group { display: flex; gap: 8px; margin-top: 16px; }
     .btn-group button { flex: 1; }
+    
+    .admin-section { margin-bottom: 20px; }
+    .admin-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #e8f0f8; }
+    .admin-lock-form {
+      text-align: center;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    #adminPwInput {
+      padding: 8px 12px;
+      width: 200px;
+      margin-right: 8px;
+    }
+    .admin-error { font-size: 11px; color: #f08080; margin-top: 8px; }
+    .admin-links { display: flex; gap: 8px; flex-wrap: wrap; }
   </style>
 </head>
 <body>
@@ -181,25 +226,70 @@
     <div class="profile-card glass">
       <img id="profileAvatar" class="profile-avatar" src="https://i.postimg.cc/FsPZ0yP1/R0010032.jpg" alt="Avatar">
       <div class="profile-name">思誼職能治療師</div>
-      <div class="profile-motto">幫助孩子發展潛能 💚</div>
+      <div class="profile-motto">𓅮 你也是個多元文化ㄉ漂亮寶貝◔.̮◔✧✦</div>
+      <div class="profile-bio">大家都問我問題，所以我架了一個網站🚄</div>
     </div>
 
-    <!-- 控制欄 -->
-    <div class="control-bar">
-      <button class="btn" id="addBtn">➕ 新增卡片</button>
-      <button class="btn" id="exportBtn">💾 匯出數據</button>
-      <button class="btn" id="importBtn">📂 匯入數據</button>
-      <input type="file" id="importInput" accept=".json" style="display: none;">
-    </div>
-
-    <!-- 標籤頁 -->
+    <!-- 思誼的寶箱 -->
     <div class="content-section glass">
-      <div class="section-title">選擇分類</div>
+      <div class="section-title">思誼的寶箱</div>
       <div class="tabs" id="tabsContainer"></div>
+      <div class="cards-grid" id="cardsContainer"></div>
     </div>
 
-    <!-- 卡片網格 -->
-    <div class="cards-grid" id="cardsContainer"></div>
+    <!-- 聯絡方式 -->
+    <div class="glass contact-section" id="contactSection">
+      <a href="mailto:ot.workflow.shihi@gmail.com" class="contact-link">
+        <div class="contact-icon">📧</div>
+        <div class="contact-label">信箱</div>
+        <div class="contact-val">ot.workflow.shihi@gmail.com</div>
+      </a>
+      <a href="https://www.instagram.com/ot.workflow" target="_blank" class="contact-link">
+        <div class="contact-icon">📱</div>
+        <div class="contact-label">Instagram</div>
+        <div class="contact-val">@ot.workflow</div>
+      </a>
+      <a href="https://www.facebook.com/ot.workflow" target="_blank" class="contact-link">
+        <div class="contact-icon">📘</div>
+        <div class="contact-label">Facebook</div>
+        <div class="contact-val">ot.workflow</div>
+      </a>
+    </div>
+
+    <!-- 後台管理（密碼保護） -->
+    <div id="adminSection" style="display: none;">
+      <div class="glass" style="padding: 28px; margin-bottom: 24px;">
+        <div class="admin-title">🔧 後台管理</div>
+        
+        <!-- 資料備份 -->
+        <div class="admin-section">
+          <div style="font-size: 12px; font-weight: 600; color: #8ab4d4; margin-bottom: 10px;">💾 資料備份</div>
+          <div class="admin-links">
+            <button class="btn" id="exportBtn">📤 匯出 JSON</button>
+            <label class="btn" style="cursor: pointer; margin: 0;">
+              📥 匯入 JSON
+              <input type="file" id="importInput" accept=".json" style="display: none;">
+            </label>
+          </div>
+          <div style="font-size: 10px; color: rgba(138, 180, 212, 0.5); margin-top: 8px;">匯出後存好 JSON 檔，下次匯入即可還原所有卡片與大頭照</div>
+        </div>
+
+        <!-- 新增卡片 -->
+        <div class="admin-section">
+          <button class="btn" id="addBtn" style="width: 100%;">➕ 新增卡片</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 密碼鎖 -->
+    <div id="adminLock">
+      <div class="glass admin-lock-form">
+        <div style="font-size: 12px; color: #8ab4d4; margin-bottom: 10px;">🔒 後台管理</div>
+        <input type="password" id="adminPwInput" placeholder="請輸入密碼">
+        <button class="btn" id="adminUnlockBtn">進入</button>
+        <div id="adminPwError" class="admin-error" style="display: none;">密碼錯誤</div>
+      </div>
+    </div>
   </div>
 
   <!-- 新增/編輯卡片模態 -->
@@ -209,12 +299,12 @@
       <form id="editForm">
         <div class="form-group">
           <label>分類</label>
-          <select id="editTheme" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #e8f0f8;">
-            <option value="shopping">購物</option>
-            <option value="book">書籍</option>
-            <option value="tool">工具</option>
-            <option value="technique">技巧</option>
-            <option value="question">問題</option>
+          <select id="editTheme">
+            <option value="shopping">🛍️ 團購</option>
+            <option value="book">📚 書籍推薦</option>
+            <option value="technique">👶 技巧分享</option>
+            <option value="question">❓ 常見問題</option>
+            <option value="course">🎓 找我上課</option>
           </select>
         </div>
         <div class="form-group">
@@ -231,7 +321,7 @@
         </div>
         <div class="btn-group">
           <button type="button" class="btn" id="saveBtnModal">保存</button>
-          <button type="button" class="btn" id="deleteBtnModal">刪除</button>
+          <button type="button" class="btn" id="deleteBtnModal" style="display: none;">刪除</button>
           <button type="button" class="btn" onclick="document.getElementById('editModal').classList.remove('open')">取消</button>
         </div>
       </form>
@@ -239,6 +329,8 @@
   </div>
 
   <script>
+    const ADMIN_PASSWORD = 'P3izFr&BrdZr2';
+    
     let cardsData = [];
     let tabOrder = [
       { key: 'all', label: '📋 全部' },
@@ -250,6 +342,7 @@
     ];
     let currentTab = 'all';
     let editingId = null;
+    let isAdminUnlocked = false;
 
     // 初始化 - 從 index.json 載入數據
     async function loadData() {
@@ -258,6 +351,7 @@
         const data = await response.json();
         cardsData = data.cardsData || [];
         if (data.tabOrder) tabOrder = data.tabOrder;
+        if (data.avatar) document.getElementById('profileAvatar').src = data.avatar;
         renderTabs();
         renderCards();
       } catch (err) {
@@ -275,7 +369,7 @@
         btn.className = 'tab-btn';
         if (tab.key === currentTab) btn.classList.add('active');
         btn.textContent = tab.label;
-        btn.onclick = () => { currentTab = tab.key; renderTabs(); renderCards(); };
+        btn.onclick = (e) => { e.preventDefault(); currentTab = tab.key; renderTabs(); renderCards(); };
         container.appendChild(btn);
       });
     }
@@ -295,7 +389,7 @@
             ${(card.links || []).map(link => `<a href="${link.url}" class="card-link" target="_blank">${link.label}</a>`).join('')}
           </div>
         `;
-        el.onclick = () => openEdit(card.id);
+        el.onclick = () => { if (isAdminUnlocked) openEdit(card.id); };
         container.appendChild(el);
       });
     }
@@ -318,6 +412,23 @@
       }
       document.getElementById('editModal').classList.add('open');
     }
+
+    // 密碼解鎖
+    document.getElementById('adminUnlockBtn').onclick = () => {
+      const pw = document.getElementById('adminPwInput').value;
+      if (pw === ADMIN_PASSWORD) {
+        isAdminUnlocked = true;
+        document.getElementById('adminLock').style.display = 'none';
+        document.getElementById('adminSection').style.display = 'block';
+        document.getElementById('adminPwError').style.display = 'none';
+      } else {
+        document.getElementById('adminPwError').style.display = 'block';
+      }
+    };
+
+    document.getElementById('adminPwInput').onkeypress = (e) => {
+      if (e.key === 'Enter') document.getElementById('adminUnlockBtn').click();
+    };
 
     document.getElementById('addBtn').onclick = () => openEdit(null);
 
@@ -385,6 +496,7 @@
       reader.onload = (e) => {
         try {
           const data = JSON.parse(e.target.result);
+          if (data.avatar) document.getElementById('profileAvatar').src = data.avatar;
           if (data.cardsData) cardsData = data.cardsData;
           if (data.tabOrder) tabOrder = data.tabOrder;
           renderTabs();
