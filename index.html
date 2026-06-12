@@ -200,8 +200,18 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
         <input type="text" id="imageUrlInput" placeholder="或貼上圖片網址 https://..." style="margin-top:6px;width:100%;padding:8px 12px;border:1px solid rgba(74,158,218,0.3);border-radius:6px;font-size:12px;background:rgba(255,255,255,0.06);color:#e8f0f8;font-family:inherit;">
       </div>
       <div class="form-group">
-        <label>連結（選填）</label>
-        <input type="text" id="linkInput" placeholder="https://...">
+        <label>連結 1（選填）</label>
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;">
+          <input type="text" id="link1LabelInput" placeholder="按鈕文字，例：前往團購">
+          <input type="text" id="link1UrlInput" placeholder="https://...">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>連結 2（選填）</label>
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;">
+          <input type="text" id="link2LabelInput" placeholder="按鈕文字，例：查看影片">
+          <input type="text" id="link2UrlInput" placeholder="https://...">
+        </div>
       </div>
       <div class="form-group">
         <label>FAQ（選填）</label>
@@ -249,8 +259,18 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <input type="text" id="editImageUrl" placeholder="或貼上圖片網址 https://..." style="margin-top:6px;width:100%;padding:8px 12px;border:1px solid rgba(74,158,218,0.3);border-radius:6px;font-size:12px;background:rgba(255,255,255,0.06);color:#e8f0f8;font-family:inherit;">
     </div>
     <div class="form-group">
-      <label>連結（選填）</label>
-      <input type="text" id="editLink" placeholder="https://...">
+      <label>連結 1（選填）</label>
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;">
+        <input type="text" id="editLink1Label" placeholder="按鈕文字">
+        <input type="text" id="editLink1Url" placeholder="https://...">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>連結 2（選填）</label>
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;">
+        <input type="text" id="editLink2Label" placeholder="按鈕文字">
+        <input type="text" id="editLink2Url" placeholder="https://...">
+      </div>
     </div>
     <div class="form-group">
       <label>FAQ</label>
@@ -269,9 +289,9 @@ const ADMIN_PW='P3izFr&BrdZr2';
 const THEME_COLORS={book:{dot:'#6c9ebf',label:'📚 書籍推薦'},course:{dot:'#52b788',label:'🎓 找我上課'},technique:{dot:'#f4a261',label:'👶 技巧分享'},question:{dot:'#9b72cf',label:'❓ 常見問題'},shopping:{dot:'#e07a98',label:'🛒 團購資訊'}};
 let tabOrder=[{key:'all',label:'全部'},{key:'book',label:'📚 書籍推薦'},{key:'course',label:'🎓 找我上課'},{key:'technique',label:'👶 技巧分享'},{key:'question',label:'❓ 常見問題'},{key:'shopping',label:'🛒 團購資訊'}];
 let cardsData=[
-  {id:1,theme:'book',title:'怪獸家族',description:'透過溫暖的故事幫助孩子理解情緒，家長超適合讀給孩子聽。',link:null,image:null,faqs:[]},
-  {id:2,theme:'shopping',title:'握筆器團購',description:'職能治療師精選握筆器，幫助孩子建立正確握筆姿勢。',link:null,image:null,faqs:[{q:'0.7mm 和 1.3mm 差在哪裡？',a:'差在筆芯直徑。\n🟠 1.3mm（較粗）→ 寫字很輕的孩子\n🟠 0.7mm（較細）→ 運筆姿勢不對或寫字很大力的孩子'},{q:'有分左右手嗎？',a:'有！左手版和右手版都有，購買時請備註孩子慣用手。'},{q:'可以換其他鉛筆嗎？',a:'✅ Lyra 粗三角 → 最剛好\n⚠️ 墊腳石小牌子 → 稍鬆但可用\n❌ 公文版、Food 超人 → 不適合'},{q:'適合幾歲？',a:'一般建議 3 歲以上，視握力發展狀況調整。'}]},
-  {id:3,theme:'tool',title:'倒數計時器',description:'幫助孩子建立時間感，減少轉換困難與情緒崩潰，OT 診所常用款。',link:null,image:null,faqs:[{q:'建議買幾分鐘的？',a:'・日常切換 → 5分鐘\n・作業閱讀 → 10～15分鐘\n・洗澡出門 → 3分鐘'},{q:'哪個款式有附矽膠套？',a:'紅色旋轉款有附矽膠保護套，適合容易摔東西的孩子。'},{q:'什麼時候開團？',a:'目前已結束，下次開團會在 IG 限動公告 @ot.workflow'}]},
+  {id:1,theme:'book',title:'怪獸家族',description:'透過溫暖的故事幫助孩子理解情緒，家長超適合讀給孩子聽。',links:[],image:null,faqs:[]},
+  {id:2,theme:'shopping',title:'握筆器團購',description:'職能治療師精選握筆器，幫助孩子建立正確握筆姿勢。',links:[],image:null,faqs:[{q:'0.7mm 和 1.3mm 差在哪裡？',a:'差在筆芯直徑。\n🟠 1.3mm（較粗）→ 寫字很輕的孩子\n🟠 0.7mm（較細）→ 運筆姿勢不對或寫字很大力的孩子'},{q:'有分左右手嗎？',a:'有！左手版和右手版都有，購買時請備註孩子慣用手。'},{q:'可以換其他鉛筆嗎？',a:'✅ Lyra 粗三角 → 最剛好\n⚠️ 墊腳石小牌子 → 稍鬆但可用\n❌ 公文版、Food 超人 → 不適合'},{q:'適合幾歲？',a:'一般建議 3 歲以上，視握力發展狀況調整。'}]},
+  {id:3,theme:'tool',title:'倒數計時器',description:'幫助孩子建立時間感，減少轉換困難與情緒崩潰，OT 診所常用款。',links:[],image:null,faqs:[{q:'建議買幾分鐘的？',a:'・日常切換 → 5分鐘\n・作業閱讀 → 10～15分鐘\n・洗澡出門 → 3分鐘'},{q:'哪個款式有附矽膠套？',a:'紅色旋轉款有附矽膠保護套，適合容易摔東西的孩子。'},{q:'什麼時候開團？',a:'目前已結束，下次開團會在 IG 限動公告 @ot.workflow'}]},
 ];
 let currentFilter='all',newImageDataUrl=null,editImageDataUrl=null;
 
@@ -339,26 +359,27 @@ function renderCards(){
     const faqHtml=(card.faqs&&card.faqs.length)?'<div class="faq-list">'+card.faqs.map(function(f){return'<div class="faq-item"><button class="faq-q">'+f.q+'<span class="faq-toggle">＋</span></button><div class="faq-a">'+f.a+'</div></div>';}).join('')+'</div>':'';
     let igDeepLink=null;
     if(card.theme==='technique'&&card.link){const m=card.link.match(/instagram\.com\/(?:reel|p|tv)\/([A-Za-z0-9_-]+)/);if(m)igDeepLink='instagram://media?id='+m[1];}
-    const isShopping=card.theme==='shopping'&&card.link;
+    const isShopping=card.theme==='shopping'&&card.links&&card.links.length>0;
+    const firstLink=card.links&&card.links[0];
     const imgSrc=card.image||null;
     let imageBlock;
     if(imgSrc&&igDeepLink){
-      imageBlock='<div class="card-image" style="cursor:pointer;position:relative;" data-ig="'+igDeepLink+'" data-url="'+card.link+'"><img src="'+imgSrc+'" alt="'+card.title+'"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);border-radius:8px;"><div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;"><div style="width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:15px solid white;margin-left:3px;"></div></div></div></div>';
+      imageBlock='<div class="card-image" style="cursor:pointer;position:relative;" data-ig="'+igDeepLink+'" data-url="'+firstLink.url+'"><img src="'+imgSrc+'" alt="'+card.title+'"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);border-radius:8px;"><div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;"><div style="width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:15px solid white;margin-left:3px;"></div></div></div></div>';
     }else if(imgSrc&&isShopping){
-      imageBlock='<div class="card-image" style="cursor:pointer;position:relative;" data-shoplink="'+card.link+'"><img src="'+imgSrc+'" alt="'+card.title+'"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);border-radius:8px;"><div style="background:rgba(224,122,152,0.9);color:white;font-size:11px;font-weight:600;padding:6px 14px;border-radius:20px;">🛒 前往團購</div></div></div>';
+      imageBlock='<div class="card-image" style="cursor:pointer;position:relative;" data-shoplink="'+firstLink.url+'"><img src="'+imgSrc+'" alt="'+card.title+'"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);border-radius:8px;"><div style="background:rgba(224,122,152,0.9);color:white;font-size:11px;font-weight:600;padding:6px 14px;border-radius:20px;">🛒 '+(firstLink.label||'前往團購')+'</div></div></div>';
     }else if(imgSrc){
       imageBlock='<div class="card-image"><img src="'+imgSrc+'" alt="'+card.title+'"></div>';
     }else if(isShopping){
-      imageBlock='<div class="card-image" style="cursor:pointer;" data-shoplink="'+card.link+'"><div style="font-size:36px;">🛒</div></div>';
+      imageBlock='<div class="card-image" style="cursor:pointer;" data-shoplink="'+firstLink.url+'"><div style="font-size:36px;">🛒</div></div>';
     }else{
       imageBlock='<div class="card-image">📌</div>';
     }
-    let linkBlock='';
-    if(igDeepLink&&card.link) linkBlock='<a class="card-link" data-ig="'+igDeepLink+'" data-url="'+card.link+'" href="#">▶ IG 影片 →</a>';
-    else if(isShopping) linkBlock='<a class="card-link" data-shoplink="'+card.link+'" href="#" style="color:#e07a98;">🛒 前往團購表單 →</a>';
+    const linksHtml=(card.links||[]).filter(function(l){return l.url;}).map(function(l){
+      return '<a class="card-link" href="'+l.url+'" target="_blank" style="display:inline-block;margin-top:6px;margin-right:10px;color:#4a9eda;">'+( l.label||'了解更多')+' →</a>';
+    }).join('');
     const actionBtns=adminOpen?'<div class="card-actions"><button class="btn edit" data-edit="'+card.id+'" style="flex:1">✏️ 編輯</button><button class="btn delete" data-del="'+card.id+'" style="flex:1">刪除</button></div>':'';
     const el=document.createElement('div');el.className='card';el.id='card-'+card.id;el.dataset.theme=card.theme;
-    el.innerHTML=imageBlock+'<div class="card-title">'+card.title+'</div><div class="card-desc">'+card.description+'</div>'+faqHtml+linkBlock+actionBtns;
+    el.innerHTML=imageBlock+'<div class="card-title">'+card.title+'</div><div class="card-desc">'+card.description+'</div>'+faqHtml+linksHtml+actionBtns;
     container.appendChild(el);
   });
 
@@ -388,12 +409,21 @@ document.getElementById('submitBtn').addEventListener('click',function(){
   if(!theme){alert('❌ 請選擇主題分類');return;}
   if(!title){alert('❌ 請填寫標題');return;}
   if(!desc){alert('❌ 請填寫推薦理由');return;}
-  const urlVal=document.getElementById('imageUrlInput').value.trim();
-  cardsData.push({id:Math.max(0,...cardsData.map(function(c){return c.id;}))+1,theme:theme,title:title,description:desc,link:document.getElementById('linkInput').value.trim()||null,image:newImageDataUrl||urlVal||null,faqs:getFaqsFromEditor('addFaqEditor')});
+  const l1url=document.getElementById('link1UrlInput').value.trim();
+  const l1label=document.getElementById('link1LabelInput').value.trim();
+  const l2url=document.getElementById('link2UrlInput').value.trim();
+  const l2label=document.getElementById('link2LabelInput').value.trim();
+  const links=[];
+  if(l1url)links.push({label:l1label||'了解更多',url:l1url});
+  if(l2url)links.push({label:l2label||'了解更多',url:l2url});
+  cardsData.push({id:Math.max(0,...cardsData.map(function(c){return c.id;}))+1,theme:theme,title:title,description:desc,links:links,image:newImageDataUrl||urlVal||null,faqs:getFaqsFromEditor('addFaqEditor')});
   document.getElementById('themeSelect').value='';
   document.getElementById('titleInput').value='';
   document.getElementById('descriptionInput').value='';
-  document.getElementById('linkInput').value='';
+  document.getElementById('link1LabelInput').value='';
+  document.getElementById('link1UrlInput').value='';
+  document.getElementById('link2LabelInput').value='';
+  document.getElementById('link2UrlInput').value='';
   document.getElementById('imageUrlInput').value='';
   document.getElementById('uploadPreview').style.display='none';
   document.getElementById('uploadHint').style.display='block';
@@ -409,7 +439,12 @@ function openEdit(id){
   document.getElementById('editTheme').value=card.theme;
   document.getElementById('editTitle').value=card.title;
   document.getElementById('editDescription').value=card.description;
-  document.getElementById('editLink').value=card.link||'';
+  const l1=card.links&&card.links[0]||{};
+  const l2=card.links&&card.links[1]||{};
+  document.getElementById('editLink1Label').value=l1.label||'';
+  document.getElementById('editLink1Url').value=l1.url||'';
+  document.getElementById('editLink2Label').value=l2.label||'';
+  document.getElementById('editLink2Url').value=l2.url||'';
   document.getElementById('editImageUrl').value=(!card.image||card.image.startsWith('data:'))?'':card.image;
   const prev=document.getElementById('editUploadPreview');const hint=document.getElementById('editUploadHint');
   if(card.image){prev.src=card.image;prev.style.display='block';hint.style.display='none';}
@@ -423,7 +458,14 @@ document.getElementById('saveEditBtn').addEventListener('click',function(){
   const id=parseInt(document.getElementById('editId').value);
   const idx=cardsData.findIndex(function(c){return c.id===id;});if(idx===-1)return;
   const urlVal=document.getElementById('editImageUrl').value.trim();
-  cardsData[idx]={...cardsData[idx],theme:document.getElementById('editTheme').value,title:document.getElementById('editTitle').value,description:document.getElementById('editDescription').value,link:document.getElementById('editLink').value||null,image:editImageDataUrl||urlVal||cardsData[idx].image||null,faqs:getFaqsFromEditor('editFaqEditor')};
+  const el1url=document.getElementById('editLink1Url').value.trim();
+  const el1label=document.getElementById('editLink1Label').value.trim();
+  const el2url=document.getElementById('editLink2Url').value.trim();
+  const el2label=document.getElementById('editLink2Label').value.trim();
+  const editLinks=[];
+  if(el1url)editLinks.push({label:el1label||'了解更多',url:el1url});
+  if(el2url)editLinks.push({label:el2label||'了解更多',url:el2url});
+  cardsData[idx]={...cardsData[idx],theme:document.getElementById('editTheme').value,title:document.getElementById('editTitle').value,description:document.getElementById('editDescription').value,links:editLinks,image:editImageDataUrl||urlVal||cardsData[idx].image||null,faqs:getFaqsFromEditor('editFaqEditor')};
   document.getElementById('editModal').classList.remove('open');renderCards();
 });
 document.getElementById('editModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
