@@ -156,7 +156,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
           <button class="btn" id="exportBtn">📤 匯出 JSON</button>
           <label class="btn" style="cursor:pointer;">📥 匯入 JSON<input type="file" id="importInput" accept=".json" style="display:none;"></label>
         </div>
-        <div style="font-size:11px;color:rgba(138,180,212,0.5);margin-top:8px;">匯出後存好 JSON 檔，下次匯入即可還原所有卡片與大頭照</div>
+        <div style="font-size:11px;color:rgba(138,180,212,0.5);margin-top:10px;line-height:1.8;">
+          每次新增卡片的完整工作流：<br>
+          1️⃣ 開網站 → 輸入密碼 → 按「📥 匯入 JSON」選上次備份檔<br>
+          2️⃣ 在後台填寫標題、推薦理由、FAQ、連結 → 按「新增卡片」<br>
+          3️⃣ 按「📤 匯出 JSON」→ 存到電腦覆蓋舊備份檔<br>
+          ✅ 完成！讀者重新整理網頁就會看到新卡片。
+        </div>
       </div>
       <div class="admin-section">
         <div class="admin-section-title">📂 分類排序（拖曳調整）</div>
