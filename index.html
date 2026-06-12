@@ -359,42 +359,49 @@
 
     function renderLinks() {
       const container = document.getElementById('linksContainer');
-      container.innerHTML = '';
+      if (!container) return; // 容器不存在就退出
       
-      editingLinks.forEach((link, index) => {
-        const linkEl = document.createElement('div');
-        linkEl.style.display = 'flex';
-        linkEl.style.gap = '8px';
-        linkEl.style.marginBottom = '8px';
-        linkEl.style.alignItems = 'flex-start';
+      container.innerHTML = ''; // 先清空
+      
+      if (!editingLinks || editingLinks.length === 0) {
+        // 如果沒有連結，顯示提示
+        container.innerHTML = '<p style="color: #8ab4d4; font-size: 12px;">還沒有連結，點下方按鈕新增</p>';
+      } else {
+        editingLinks.forEach((link, index) => {
+          const linkEl = document.createElement('div');
+          linkEl.style.display = 'flex';
+          linkEl.style.gap = '8px';
+          linkEl.style.marginBottom = '8px';
+          linkEl.style.alignItems = 'flex-start';
+          
+          linkEl.innerHTML = `
+            <div style="flex: 0 0 120px;">
+              <input type="text" placeholder="標籤" value="${link.label}" data-link-label="${index}" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #e8f0f8;">
+            </div>
+            <div style="flex: 1;">
+              <input type="text" placeholder="https://..." value="${link.url}" data-link-url="${index}" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #e8f0f8;">
+            </div>
+            <button type="button" class="btn" onclick="removeLink(${index})" style="flex: 0 0 auto; padding: 8px 12px;">✕</button>
+          `;
+          
+          container.appendChild(linkEl);
+        });
         
-        linkEl.innerHTML = `
-          <div style="flex: 0 0 120px;">
-            <input type="text" placeholder="標籤" value="${link.label}" data-link-label="${index}" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #e8f0f8;">
-          </div>
-          <div style="flex: 1;">
-            <input type="text" placeholder="https://..." value="${link.url}" data-link-url="${index}" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #e8f0f8;">
-          </div>
-          <button type="button" class="btn" onclick="removeLink(${index})" style="flex: 0 0 auto; padding: 8px 12px;">✕</button>
-        `;
+        // 綁定輸入框事件
+        document.querySelectorAll('[data-link-label]').forEach(input => {
+          input.onchange = (e) => {
+            const index = parseInt(e.target.dataset.linkLabel);
+            editingLinks[index].label = e.target.value;
+          };
+        });
         
-        container.appendChild(linkEl);
-      });
-      
-      // 綁定輸入框事件
-      document.querySelectorAll('[data-link-label]').forEach(input => {
-        input.onchange = (e) => {
-          const index = parseInt(e.target.dataset.linkLabel);
-          editingLinks[index].label = e.target.value;
-        };
-      });
-      
-      document.querySelectorAll('[data-link-url]').forEach(input => {
-        input.onchange = (e) => {
-          const index = parseInt(e.target.dataset.linkUrl);
-          editingLinks[index].url = e.target.value;
-        };
-      });
+        document.querySelectorAll('[data-link-url]').forEach(input => {
+          input.onchange = (e) => {
+            const index = parseInt(e.target.dataset.linkUrl);
+            editingLinks[index].url = e.target.value;
+          };
+        });
+      }
     }
 
     function addLink() {
@@ -559,25 +566,39 @@
     function openEdit(id) {
       const card = cardsData.find(c => c.id === id);
       editingId = id;
+      
       if (card) {
+        // 編輯現有卡片
         document.getElementById('modalTitle').textContent = '編輯卡片';
         document.getElementById('editTheme').value = card.theme;
         document.getElementById('editStatus').value = card.status || '永久商品';
         document.getElementById('editTitle').value = card.title;
         document.getElementById('editDesc').value = card.description;
-        editingLinks = JSON.parse(JSON.stringify(card.links || []));
-        renderLinks();
         document.getElementById('editFaqs').value = (card.faqs || []).map(f => `${f.q} | ${f.a}`).join('\n');
         document.getElementById('deleteBtnModal').style.display = 'block';
+        
+        editingLinks = JSON.parse(JSON.stringify(card.links || []));
       } else {
+        // 新增卡片
         document.getElementById('modalTitle').textContent = '新增卡片';
-        document.getElementById('editForm').reset();
-        editingLinks = [];
-        renderLinks();
+        document.getElementById('editTheme').value = 'shopping';
+        document.getElementById('editStatus').value = '永久商品';
+        document.getElementById('editTitle').value = '';
+        document.getElementById('editDesc').value = '';
+        document.getElementById('editFaqs').value = '';
         document.getElementById('deleteBtnModal').style.display = 'none';
+        
+        editingLinks = [];
         editingId = null;
       }
+      
+      // 打開模態框
       document.getElementById('editModal').classList.add('open');
+      
+      // 延遲渲染連結，確保DOM準備好
+      setTimeout(() => {
+        renderLinks();
+      }, 50);
     }
 
     document.getElementById('addBtn').onclick = () => openEdit(null);
