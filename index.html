@@ -34,7 +34,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .card-image img{width:100%;height:100%;object-fit:cover}
 .card-title{font-size:15px;font-weight:600;color:#e8f0f8;margin-bottom:6px}
 .card-desc{font-size:12px;color:#8ab4d4;margin-bottom:10px;line-height:1.5}
-.card-link{display:inline-block;color:#4a9eda;text-decoration:none;font-size:12px;font-weight:600;margin-top:6px}
+.card-link{display:inline-block;color:white;text-decoration:none;font-size:12px;font-weight:600;margin-top:8px;margin-right:8px;padding:8px 14px;background:rgba(74,158,218,0.6);border-radius:6px;transition:all 0.3s;border:1px solid rgba(74,158,218,0.8)}.card-link:hover{background:rgba(74,158,218,0.85);border-color:rgba(74,158,218,1)}
 .card-actions{display:flex;gap:8px;margin-top:10px}
 .faq-list{margin-top:10px;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px}
 .faq-item{margin-bottom:6px;border:1px solid rgba(255,255,255,0.08);border-radius:8px;overflow:hidden}
@@ -367,23 +367,15 @@ function renderCards(){
 
   list.forEach(function(card){
     const faqHtml=(card.faqs&&card.faqs.length)?'<div class="faq-list">'+card.faqs.map(function(f){return'<div class="faq-item"><button class="faq-q">'+f.q+'<span class="faq-toggle">＋</span></button><div class="faq-a">'+f.a+'</div></div>';}).join('')+'</div>':'';
-    const isShopping=card.theme==='shopping'&&card.links&&card.links.length>0;
-    const firstLink=card.links&&card.links[0];
     const imgSrc=card.image||null;
     let imageBlock;
-    if(imgSrc&&igDeepLink){
-      imageBlock='<div class="card-image" style="cursor:pointer;position:relative;" data-ig="'+igDeepLink+'" data-url="'+(firstLink&&firstLink.url)+'"><img src="'+imgSrc+'" alt="'+card.title+'"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);border-radius:8px;"><div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;"><div style="width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:15px solid white;margin-left:3px;"></div></div></div></div>';
-    }else if(imgSrc&&isShopping){
-      imageBlock='<div class="card-image" style="cursor:pointer;position:relative;" data-shoplink="'+firstLink.url+'"><img src="'+imgSrc+'" alt="'+card.title+'"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);border-radius:8px;"><div style="background:rgba(224,122,152,0.9);color:white;font-size:11px;font-weight:600;padding:6px 14px;border-radius:20px;">🛒 '+(firstLink.label||'前往團購')+'</div></div></div>';
-    }else if(imgSrc){
+    if(imgSrc){
       imageBlock='<div class="card-image"><img src="'+imgSrc+'" alt="'+card.title+'"></div>';
-    }else if(isShopping){
-      imageBlock='<div class="card-image" style="cursor:pointer;" data-shoplink="'+firstLink.url+'"><div style="font-size:36px;">🛒</div></div>';
     }else{
       imageBlock='<div class="card-image">📌</div>';
     }
     const linksHtml=(card.links||[]).filter(function(l){return l.url;}).map(function(l){
-      return '<a class="card-link" href="'+l.url+'" target="_blank" style="display:inline-block;margin-top:6px;margin-right:10px;color:#4a9eda;">'+(l.label||'了解更多')+' →</a>';
+      return '<a class="card-link" href="'+l.url+'" target="_blank">'+(l.label||'了解更多')+' →</a>';
     }).join('');
     const el=document.createElement('div');el.className='card';el.id='card-'+card.id;el.dataset.theme=card.theme;
 
@@ -398,10 +390,6 @@ function renderCards(){
   container.addEventListener('click',function(e){
     const faqQ=e.target.closest('.faq-q');
     if(faqQ){const a=faqQ.nextElementSibling;a.classList.toggle('open');faqQ.querySelector('.faq-toggle').textContent=a.classList.contains('open')?'－':'＋';return;}
-    const igEl=e.target.closest('[data-ig]');
-    if(igEl){e.preventDefault();openSocial(igEl.dataset.ig||igEl.dataset.url,igEl.dataset.url||igEl.dataset.fb);return;}
-    const shopEl=e.target.closest('[data-shoplink]');
-    if(shopEl){e.preventDefault();window.open(shopEl.dataset.shoplink,'_blank');return;}
     const editBtn=e.target.closest('[data-edit]');
     if(editBtn){openEdit(parseInt(editBtn.dataset.edit));return;}
     const delBtn=e.target.closest('[data-del]');
