@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OT Workflow | 思誼職能治療師</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#0d2137;color:#e8f0f8;line-height:1.6;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(26,79,138,0.4) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(13,43,65,0.6) 0%,transparent 60%);pointer-events:none;z-index:0}
+.container{max-width:900px;margin:0 auto;padding:20px;position:relative;z-index:1}
+.glass{background:rgba(255,255,255,0.06);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.12);border-radius:16px}
+
+/* 個人檔案 */
+.profile-card{padding:28px 24px;margin-bottom:24px;text-align:center}
+.profile-avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid rgba(100,160,220,0.5);box-shadow:0 0 20px rgba(26,79,138,0.4);display:block;margin:0 auto 12px}
+.profile-name{font-size:20px;font-weight:600;color:#e8f0f8;margin-bottom:4px}
+.profile-motto{background:rgba(0,0,0,0.3);border-left:3px solid #4a9eda;padding:10px 14px;margin:12px 0;font-size:13px;color:#b8d4f0;border-radius:6px;line-height:1.6}
+.profile-bio{font-size:13px;color:#8ab4d4;line-height:1.6}
+
+/* 寶箱 */
+.content-section{padding:28px;margin-bottom:24px}
+.section-title{font-size:18px;font-weight:600;color:#e8f0f8;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.tab-btn{padding:7px 14px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);border-radius:8px;cursor:pointer;font-size:12px;font-weight:500;color:#8ab4d4;transition:all 0.3s;white-space:nowrap}
+.tab-btn:hover{border-color:rgba(74,158,218,0.5);background:rgba(74,158,218,0.1);color:#c8e0f4}
+.tab-btn.active{background:rgba(26,79,138,0.6);color:white;border-color:rgba(74,158,218,0.6)}
+
+/* 子標題快速導航 */
+.quick-nav{display:none;flex-wrap:wrap;gap:8px;margin-bottom:18px;padding:12px;background:rgba(0,0,0,0.25);border-radius:10px;border:1px dashed rgba(74,158,218,0.3)}
+.quick-nav.show{display:flex}
+.quick-nav-title{width:100%;font-size:11px;color:rgba(138,180,212,0.7)}
+.quick-nav-link{font-size:12px;padding:5px 12px;background:rgba(74,158,218,0.15);border:1px solid rgba(74,158,218,0.4);border-radius:20px;color:#7fc1ef;cursor:pointer;transition:all 0.2s;text-decoration:none}
+.quick-nav-link:hover{background:rgba(74,158,218,0.4);color:white}
+
+/* 卡片 */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.card{border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:all 0.3s;position:relative}
+.card:hover{border-color:rgba(74,158,218,0.4);background:rgba(255,255,255,0.09);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.card.flash{border-color:#4a9eda;box-shadow:0 0 0 3px rgba(74,158,218,0.5)}
+.card[data-theme="book"]{border-left:3px solid #6c9ebf}
+.card[data-theme="technique"]{border-left:3px solid #f4a261}
+.card[data-theme="question"]{border-left:3px solid #9b72cf}
+.card[data-theme="shopping"]{border-left:3px solid #e07a98}
+.card[data-theme="course"]{border-left:3px solid #4a9eda}
+.card[data-theme="work"]{border-left:3px solid #52b788}
+.card-img{width:100%;height:150px;object-fit:cover;border-radius:8px;margin-bottom:12px;display:block;background:rgba(255,255,255,0.05)}
+.card-img-placeholder{width:100%;height:150px;border-radius:8px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.15);color:rgba(138,180,212,0.4);font-size:28px}
+.card-title{font-size:15px;font-weight:600;color:#e8f0f8;margin-bottom:6px;padding-right:70px}
+.card-desc{font-size:12px;color:#8ab4d4;margin-bottom:10px;line-height:1.5}
+.card-links{display:flex;flex-direction:column;gap:6px}
+.card-links.two-col{flex-direction:row;flex-wrap:wrap}
+.card-links.two-col .card-link{flex:1;min-width:calc(50% - 3px)}
+.card-link{font-size:12px;font-weight:600;padding:8px 14px;background:rgba(74,158,218,0.6);border:1px solid rgba(74,158,218,0.8);border-radius:6px;color:white;text-decoration:none;transition:all 0.3s;text-align:center}
+.card-link:hover{background:rgba(74,158,218,0.85);border-color:rgba(74,158,218,1)}
+
+/* 狀態標籤 */
+.status-badge{position:absolute;top:14px;right:14px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:10px;z-index:2}
+.card.has-img .status-badge{top:24px;right:24px}
+.status-badge.permanent{background:rgba(82,183,136,0.9);color:#fff}
+.status-badge.open{background:rgba(74,158,218,0.95);color:#fff}
+.status-badge.closed{background:rgba(220,110,110,0.9);color:#fff}
+
+/* FAQ（淺色底） */
+.faq-toggle{font-size:12px;font-weight:600;color:#5a3d8a;cursor:pointer;margin-top:10px;padding:8px 10px;background:#e8e0f5;border:1px solid #c9b8e8;border-radius:6px;text-align:center;user-select:none;transition:all 0.2s}
+.faq-toggle:hover{background:#dcd0f0}
+.faq-list{display:none;margin-top:8px}
+.faq-list.open{display:block}
+.faq-item{margin-bottom:6px;border:1px solid #d8cdec;border-radius:6px;overflow:hidden}
+.faq-q{font-size:12px;font-weight:600;color:#4a3370;padding:9px 11px;cursor:pointer;background:#f2edfa;user-select:none}
+.faq-q:hover{background:#e8e0f5}
+.faq-a{font-size:12px;color:#3d3d50;padding:9px 11px;display:none;line-height:1.7;background:#faf8fd}
+.faq-a.open{display:block}
+
+/* 編輯按鈕 */
+.card-admin-btns{display:none;gap:6px;margin-top:10px}
+.card-admin-btns.show{display:flex}
+.mini-btn{flex:1;font-size:11px;padding:5px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:5px;color:#8ab4d4;cursor:pointer}
+.mini-btn:hover{background:rgba(74,158,218,0.3);color:white}
+
+/* 聯絡 */
+.contact-grid{padding:20px 24px;margin-bottom:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.contact-link{text-align:center;padding:12px;border-radius:8px;text-decoration:none;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);transition:all 0.2s;color:#8ab4d4}
+.contact-link:hover{background:rgba(74,158,218,0.2);border-color:rgba(74,158,218,0.4);color:#c8e0f4}
+.contact-icon{font-size:20px;margin-bottom:6px}
+.contact-label{font-size:11px;display:block;color:#8ab4d4}
+.contact-val{font-size:10px;display:block;color:#6a8cb4;margin-top:2px;word-break:break-all}
+@media(max-width:600px){.contact-grid{grid-template-columns:1fr}}
+
+/* 按鈕 */
+.btn{padding:10px 16px;background:rgba(74,158,218,0.3);border:1px solid rgba(74,158,218,0.5);border-radius:6px;color:#e8f0f8;cursor:pointer;font-size:13px;transition:all 0.2s;font-family:inherit}
+.btn:hover{background:rgba(74,158,218,0.5)}
+
+/* 後台 */
+.admin-lock-form{text-align:center;padding:20px;margin-bottom:24px}
+#adminPwInput{padding:8px 12px;width:180px;background:rgba(255,255,255,0.08);border:1px solid rgba(74,158,218,0.3);border-radius:6px;color:#e8f0f8;font-family:inherit;font-size:12px}
+.admin-error{font-size:11px;color:#f08080;margin-top:8px}
+.admin-panel{padding:28px;margin-bottom:24px}
+.admin-sub-title{font-size:12px;font-weight:600;color:#8ab4d4;margin-bottom:10px}
+.admin-section{margin-bottom:22px}
+.workflow-note{font-size:11px;color:rgba(138,180,212,0.6);margin-top:10px;line-height:1.9}
+
+/* 模態 */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.modal-content{background:#0d2137;border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:24px;max-width:560px;width:92%;max-height:92vh;overflow-y:auto}
+.modal-title{font-size:18px;font-weight:600;margin-bottom:16px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;margin-bottom:5px;color:#8ab4d4}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:#e8f0f8;font-family:inherit;font-size:13px}
+.form-group select option{background:#0d2137}
+.form-group textarea{resize:vertical;min-height:60px}
+.form-hint{font-size:10px;color:rgba(138,180,212,0.5);margin-top:3px;line-height:1.5}
+.btn-group{display:flex;gap:8px;margin-top:16px}
+.btn-group button{flex:1}
+
+/* 動態欄位編輯器 */
+.field-row{display:flex;gap:6px;margin-bottom:8px;align-items:flex-start}
+.field-row input{flex:1;padding:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:#e8f0f8;font-family:inherit;font-size:12px}
+.field-row input.f-label{flex:0 0 32%}
+.field-row textarea{flex:1;padding:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:#e8f0f8;font-family:inherit;font-size:12px;resize:vertical;min-height:38px}
+.field-del{flex:0 0 32px;height:34px;background:rgba(240,128,128,0.15);border:1px solid rgba(240,128,128,0.35);border-radius:4px;color:#f08080;cursor:pointer;font-size:13px}
+.field-del:hover{background:rgba(240,128,128,0.35)}
+.field-add{width:100%;padding:8px;background:rgba(82,183,136,0.15);border:1px dashed rgba(82,183,136,0.5);border-radius:6px;color:#52b788;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit}
+.field-add:hover{background:rgba(82,183,136,0.3)}
+
+/* 圖片上傳 */
+.img-preview{width:100%;height:140px;object-fit:cover;border-radius:8px;margin-bottom:8px;display:none;border:1px solid rgba(255,255,255,0.15)}
+.img-preview.show{display:block}
+.img-btns{display:flex;gap:8px}
+.img-btns .btn{flex:1;font-size:12px;padding:8px;text-align:center}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 個人檔案 -->
+  <div class="profile-card glass">
+    <img id="profileAvatar" class="profile-avatar" src="https://i.postimg.cc/FsPZ0yP1/R0010032.jpg" alt="思誼頭照">
+    <div class="profile-name">思誼職能治療師</div>
+    <div class="profile-motto">𓅮 你也是個多元文化ㄉ漂亮寶貝◔.̮◔✧✦</div>
+    <div class="profile-bio">太多人問我了，所以我架了一個網頁🚄</div>
+  </div>
+
+  <!-- 思誼的寶箱 -->
+  <div class="content-section glass">
+    <div class="section-title">思誼的寶箱</div>
+    <div class="tabs" id="tabsContainer"></div>
+    <div class="quick-nav" id="quickNav"></div>
+    <div class="cards-grid" id="cardsContainer"></div>
+  </div>
+
+  <!-- 聯絡方式 -->
+  <div class="glass contact-grid">
+    <a href="mailto:ot.workflow.shihi@gmail.com" class="contact-link">
+      <div class="contact-icon">📧</div>
+      <span class="contact-label">信箱</span>
+      <span class="contact-val">ot.workflow.shihi@gmail.com</span>
+    </a>
+    <a href="https://www.instagram.com/ot.workflow" target="_blank" class="contact-link">
+      <div class="contact-icon">📱</div>
+      <span class="contact-label">Instagram</span>
+      <span class="contact-val">@ot.workflow</span>
+    </a>
+    <a href="https://www.facebook.com/ot.workflow" target="_blank" class="contact-link">
+      <div class="contact-icon">📘</div>
+      <span class="contact-label">Facebook</span>
+      <span class="contact-val">ot.workflow</span>
+    </a>
+  </div>
+
+  <!-- 後台密碼鎖 -->
+  <div id="adminLock" class="glass admin-lock-form">
+    <div style="font-size:12px;color:#8ab4d4;margin-bottom:10px;">🔒 後台管理</div>
+    <input type="password" id="adminPwInput" placeholder="請輸入密碼">
+    <button class="btn" id="adminUnlockBtn" style="margin-left:8px;">進入</button>
+    <div id="adminPwError" class="admin-error" style="display:none;">密碼錯誤</div>
+  </div>
+
+  <!-- 後台面板 -->
+  <div id="adminPanel" class="glass admin-panel" style="display:none;">
+    <div class="section-title">🔧 後台管理（僅你自己可見）</div>
+
+    <div class="admin-section">
+      <div class="admin-sub-title">💾 資料備份</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn" id="exportBtn">📤 匯出 JSON</button>
+        <label class="btn" style="cursor:pointer;">📥 匯入 JSON<input type="file" id="importInput" accept=".json" style="display:none;"></label>
+      </div>
+      <div class="workflow-note">
+        每次新增卡片的完整工作流：<br>
+        1️⃣ 打開這個網頁 → 輸入密碼進後台 → 按「📥 匯入 JSON」選上次備份檔<br>
+        2️⃣ 在後台新增或編輯卡片<br>
+        3️⃣ 按「📤 匯出 JSON」→ 存到電腦覆蓋舊備份檔<br>
+        ✅ 完成！這個網頁本身已內建目前的卡片，平常打開就能看。
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <div class="admin-sub-title">🖼️ 更換大頭照</div>
+      <label class="btn" style="cursor:pointer;">📷 從電腦上傳<input type="file" id="avatarUpload" accept="image/*" style="display:none;"></label>
+      <div style="display:flex;gap:6px;margin-top:10px;">
+        <input type="text" id="avatarUrlInput" placeholder="或貼上圖片網址 https://..." style="flex:1;padding:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:#e8f0f8;font-family:inherit;font-size:12px;">
+        <button class="btn" id="avatarUrlBtn">套用</button>
+      </div>
+      <div class="workflow-note">換完記得匯出 JSON 保存</div>
+    </div>
+
+    <div class="admin-section">
+      <button class="btn" id="addBtn" style="width:100%;">➕ 新增卡片</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- 新增/編輯卡片 -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <div class="modal-title" id="modalTitle">新增卡片</div>
+
+    <div class="form-group">
+      <label>商品圖片</label>
+      <img id="editImgPreview" class="img-preview" alt="預覽">
+      <div class="img-btns">
+        <label class="btn" style="cursor:pointer;">📷 上傳圖片<input type="file" id="editImgUpload" accept="image/*" style="display:none;"></label>
+        <button type="button" class="btn" id="editImgRemove">🗑️ 移除圖片</button>
+      </div>
+      <div class="form-hint">建議橫向圖片，主體放中央。也可以不放圖。</div>
+    </div>
+
+    <div class="form-group">
+      <label>分類</label>
+      <select id="editTheme">
+        <option value="shopping">🛍️ 團購</option>
+        <option value="question">❓ 常見問題</option>
+        <option value="course">🎓 找我上課</option>
+        <option value="work">💼 工作邀約</option>
+        <option value="book">📚 書籍推薦</option>
+        <option value="technique">👶 技巧分享</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>狀態標籤</label>
+      <select id="editStatus">
+        <option value="">（不顯示標籤）</option>
+        <option value="permanent">永久商品</option>
+        <option value="open">開團中</option>
+        <option value="closed">已結團</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>標題</label>
+      <input type="text" id="editTitle">
+    </div>
+
+    <div class="form-group">
+      <label>描述</label>
+      <textarea id="editDesc"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>連結</label>
+      <div id="linksEditor"></div>
+      <button type="button" class="field-add" id="addLinkBtn">➕ 新增連結</button>
+    </div>
+
+    <div class="form-group">
+      <label>常見問題 FAQ</label>
+      <div id="faqsEditor"></div>
+      <button type="button" class="field-add" id="addFaqBtn">➕ 新增問題</button>
+    </div>
+
+    <div class="btn-group">
+      <button type="button" class="btn" id="saveBtnModal">保存</button>
+      <button type="button" class="btn" id="deleteBtnModal" style="display:none;">刪除</button>
+      <button type="button" class="btn" id="cancelBtnModal">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var ADMIN_PASSWORD = 'P3izFr&BrdZr2';
+var isAdminUnlocked = false;
+var editingId = null;
+var currentTab = 'all';
+var editImgData = null;
+
+// ===== 卡片資料（直接內建，不需要 index.json）=====
+var cardsData = [
+  {
+    id: 1, theme: 'shopping', status: 'permanent', image: null,
+    title: '日本SONIC 握筆器',
+    description: '自己找廠商自己賣，不是經過代購抽一手，可以開發票。',
+    links: [
+      { label: '(IG)影片介紹', url: 'https://www.instagram.com/reel/DYwj6tEBP4d/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==' },
+      { label: '(FB)影片介紹', url: 'https://www.facebook.com/share/r/1CzvvBeTP9/' },
+      { label: '蝦皮分潤連結', url: 'https://s.shopee.tw/7VDc8eg47K' },
+      { label: '官網購買（無分潤）', url: 'https://reurl.cc/V2ZjGZ' }
+    ],
+    faqs: [
+      { q: '0.7mm 和 1.3mm 差在哪？', a: '0.7mm 筆芯較細、線條精細，適合已有基本控筆能力的孩子；1.3mm 筆芯較粗、好抓握不易斷芯，適合初學或力道控制還在發展的孩子。' },
+      { q: '左撇子可以用嗎？', a: '可以，握筆器設計左右手都適用。' },
+      { q: '換别的鉛筆也能用嗎？', a: '一般標準粗細的鉛筆都可以套用，過粗的三角鉛筆可能會比較緊。' },
+      { q: '適合幾歲的孩子？', a: '建議學齡前大班到低年級開始練習握筆的孩子使用，實際依孩子發展狀況調整。' }
+    ]
+  },
+  {
+    id: 2, theme: 'shopping', status: 'permanent', image: null,
+    title: '標籤機',
+    description: '幫助孩子學習分類、培養歸納能力的實用工具。',
+    links: [
+      { label: '(IG)影片介紹', url: 'https://www.instagram.com/reel/DOYlsLwEwxb/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==' },
+      { label: '(FB)影片介紹', url: 'https://www.facebook.com/share/r/1Hvabcawwz/' },
+      { label: '購買連結', url: 'https://h8lu0z6o3s.cashier.ecpay.com.tw' }
+    ],
+    faqs: []
+  },
+  {
+    id: 3, theme: 'shopping', status: 'open', image: null,
+    title: '拼圖',
+    description: '正在開團中，要買要快！',
+    links: [
+      { label: '(IG)影片介紹', url: 'https://www.instagram.com/reel/DZXqOJwTfZV/?utm_source=ig_web_button_share_sheet&igsh=MzRlODBiNWFlZA==' },
+      { label: '(FB)影片介紹', url: 'https://www.facebook.com/share/r/1bHeYawgrf/' },
+      { label: '團購連結', url: 'https://gbf.tw/cteyc' }
+    ],
+    faqs: []
+  },
+  { id: 4, theme: 'shopping', status: 'closed', image: null, title: '媽媽友',
+    description: '本團已結束，加入 Line 社群搶先收到下次開團通知！',
+    links: [{ label: '加入 Line 社群', url: 'https://line.me/ti/g2/CYlqRwCYWQY5xludcGtXT2wElRwq3hJtrD0EHA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default' }], faqs: [] },
+  { id: 5, theme: 'shopping', status: 'closed', image: null, title: '火山搖搖',
+    description: '本團已結束，加入 Line 社群搶先收到下次開團通知！',
+    links: [{ label: '加入 Line 社群', url: 'https://line.me/ti/g2/CYlqRwCYWQY5xludcGtXT2wElRwq3hJtrD0EHA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default' }], faqs: [] },
+  { id: 6, theme: 'shopping', status: 'closed', image: null, title: '倒數計時器',
+    description: '本團已結束，加入 Line 社群搶先收到下次開團通知！',
+    links: [{ label: '加入 Line 社群', url: 'https://line.me/ti/g2/CYlqRwCYWQY5xludcGtXT2wElRwq3hJtrD0EHA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default' }], faqs: [] },
+  { id: 7, theme: 'shopping', status: 'closed', image: null, title: '童書',
+    description: '本團已結束，加入 Line 社群搶先收到下次開團通知！',
+    links: [{ label: '加入 Line 社群', url: 'https://line.me/ti/g2/CYlqRwCYWQY5xludcGtXT2wElRwq3hJtrD0EHA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default' }], faqs: [] }
+];
+
+var tabOrder = [
+  { key: 'all', label: '📋 全部' },
+  { key: 'shopping', label: '🛍️ 團購' },
+  { key: 'question', label: '❓ 常見問題' },
+  { key: 'course', label: '🎓 找我上課' },
+  { key: 'work', label: '💼 工作邀約' }
+];
+
+var STATUS_LABEL = { permanent: '永久商品', open: '開團中', closed: '已結團' };
+
+function renderTabs() {
+  var c = document.getElementById('tabsContainer');
+  c.innerHTML = '';
+  tabOrder.forEach(function(tab) {
+    var b = document.createElement('button');
+    b.className = 'tab-btn' + (tab.key === currentTab ? ' active' : '');
+    b.textContent = tab.label;
+    b.onclick = function() { currentTab = tab.key; renderTabs(); renderQuickNav(); renderCards(); };
+    c.appendChild(b);
+  });
+}
+
+// 子標題快速導航：點分類後列出該分類所有卡片標題
+function renderQuickNav() {
+  var nav = document.getElementById('quickNav');
+  nav.innerHTML = '';
+  var list = currentTab === 'all' ? cardsData : cardsData.filter(function(x) { return x.theme === currentTab; });
+  if (list.length === 0) { nav.classList.remove('show'); return; }
+  var t = document.createElement('div');
+  t.className = 'quick-nav-title';
+  t.textContent = '⚡ 快速跳轉：點商品名稱直接前往';
+  nav.appendChild(t);
+  list.forEach(function(card) {
+    var a = document.createElement('span');
+    a.className = 'quick-nav-link';
+    a.textContent = card.title;
+    a.onclick = function() {
+      var el = document.getElementById('card-' + card.id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('flash');
+        setTimeout(function() { el.classList.remove('flash'); }, 2000);
+      }
+    };
+    nav.appendChild(a);
+  });
+  nav.classList.add('show');
+}
+
+function renderCards() {
+  var c = document.getElementById('cardsContainer');
+  c.innerHTML = '';
+  var list = currentTab === 'all' ? cardsData : cardsData.filter(function(x) { return x.theme === currentTab; });
+  if (list.length === 0) {
+    c.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:rgba(138,180,212,0.5);font-size:13px;padding:30px 0;">這個分類還沒有內容，敬請期待 ✨</div>';
+    return;
+  }
+  list.forEach(function(card) {
+    var el = document.createElement('div');
+    el.className = 'card glass' + (card.image ? ' has-img' : '');
+    el.id = 'card-' + card.id;
+    el.dataset.theme = card.theme;
+
+    var html = '';
+    if (card.status && STATUS_LABEL[card.status]) {
+      html += '<div class="status-badge ' + card.status + '">' + STATUS_LABEL[card.status] + '</div>';
+    }
+    if (card.image) {
+      html += '<img class="card-img" src="' + card.image + '" alt="' + card.title + '">';
+    } else {
+      html += '<div class="card-img-placeholder">🖼️</div>';
+    }
+    html += '<div class="card-title">' + card.title + '</div>';
+    html += '<div class="card-desc">' + card.description + '</div>';
+
+    var buyLinks = (card.links || []).filter(function(l) { return l.label.indexOf('影片') === -1; });
+    var videoLinks = (card.links || []).filter(function(l) { return l.label.indexOf('影片') !== -1; });
+
+    // ① 常見問題放最上面
+    if (card.faqs && card.faqs.length > 0) {
+      html += '<div class="faq-toggle" data-faqtoggle>❓ 常見問題（' + card.faqs.length + '）</div>';
+      html += '<div class="faq-list">';
+      card.faqs.forEach(function(f) {
+        html += '<div class="faq-item"><div class="faq-q" data-faqq>' + f.q + '</div><div class="faq-a">' + f.a + '</div></div>';
+      });
+      html += '</div>';
+    }
+
+    // ② 購買連結（多個時左右並排）
+    if (buyLinks.length > 0) {
+      html += '<div class="card-links ' + (buyLinks.length > 1 ? 'two-col' : '') + '" style="margin-top:10px;">';
+      buyLinks.forEach(function(l) {
+        html += '<a href="' + l.url + '" class="card-link" target="_blank">' + l.label + '</a>';
+      });
+      html += '</div>';
+    }
+
+    // ③ 影片介紹（多個時左右並排）
+    if (videoLinks.length > 0) {
+      html += '<div class="card-links ' + (videoLinks.length > 1 ? 'two-col' : '') + '" style="margin-top:8px;">';
+      videoLinks.forEach(function(l) {
+        html += '<a href="' + l.url + '" class="card-link" target="_blank">' + l.label + '</a>';
+      });
+      html += '</div>';
+    }
+
+    html += '<div class="card-admin-btns' + (isAdminUnlocked ? ' show' : '') + '"><button class="mini-btn" data-edit="' + card.id + '">✏️ 編輯</button><button class="mini-btn" data-del="' + card.id + '">🗑️ 刪除</button></div>';
+
+    el.innerHTML = html;
+    c.appendChild(el);
+  });
+}
+
+document.getElementById('cardsContainer').addEventListener('click', function(e) {
+  var t = e.target;
+  if (t.hasAttribute('data-faqtoggle')) { t.nextElementSibling.classList.toggle('open'); return; }
+  if (t.hasAttribute('data-faqq')) { t.nextElementSibling.classList.toggle('open'); return; }
+  if (t.hasAttribute('data-edit')) { openEdit(parseInt(t.getAttribute('data-edit'))); return; }
+  if (t.hasAttribute('data-del')) {
+    if (confirm('確定刪除此卡片？')) {
+      cardsData = cardsData.filter(function(x) { return x.id !== parseInt(t.getAttribute('data-del')); });
+      renderQuickNav(); renderCards();
+    }
+  }
+});
+
+// ===== 動態欄位編輯器 =====
+function addLinkRow(label, url) {
+  var row = document.createElement('div');
+  row.className = 'field-row';
+  row.innerHTML = '<input type="text" class="f-label" placeholder="按鈕文字" value="">' +
+                  '<input type="text" class="f-url" placeholder="https://..." value="">' +
+                  '<button type="button" class="field-del">✕</button>';
+  row.querySelector('.f-label').value = label || '';
+  row.querySelector('.f-url').value = url || '';
+  row.querySelector('.field-del').onclick = function() { row.remove(); };
+  document.getElementById('linksEditor').appendChild(row);
+}
+
+function addFaqRow(q, a) {
+  var row = document.createElement('div');
+  row.className = 'field-row';
+  row.innerHTML = '<input type="text" class="f-q" placeholder="問題" style="flex:0 0 38%;">' +
+                  '<textarea class="f-a" placeholder="答案"></textarea>' +
+                  '<button type="button" class="field-del">✕</button>';
+  row.querySelector('.f-q').value = q || '';
+  row.querySelector('.f-a').value = a || '';
+  row.querySelector('.field-del').onclick = function() { row.remove(); };
+  document.getElementById('faqsEditor').appendChild(row);
+}
+
+document.getElementById('addLinkBtn').onclick = function() { addLinkRow('', ''); };
+document.getElementById('addFaqBtn').onclick = function() { addFaqRow('', ''); };
+
+// 圖片上傳
+document.getElementById('editImgUpload').addEventListener('change', function() {
+  var f = this.files[0];
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function(e) {
+    editImgData = e.target.result;
+    var p = document.getElementById('editImgPreview');
+    p.src = editImgData;
+    p.classList.add('show');
+  };
+  r.readAsDataURL(f);
+  this.value = '';
+});
+document.getElementById('editImgRemove').onclick = function() {
+  editImgData = null;
+  var p = document.getElementById('editImgPreview');
+  p.src = '';
+  p.classList.remove('show');
+};
+
+function openEdit(id) {
+  var card = cardsData.find(function(x) { return x.id === id; });
+  editingId = id;
+  document.getElementById('linksEditor').innerHTML = '';
+  document.getElementById('faqsEditor').innerHTML = '';
+  var p = document.getElementById('editImgPreview');
+
+  if (card) {
+    document.getElementById('modalTitle').textContent = '編輯卡片';
+    document.getElementById('editTheme').value = card.theme;
+    document.getElementById('editStatus').value = card.status || '';
+    document.getElementById('editTitle').value = card.title;
+    document.getElementById('editDesc').value = card.description;
+    (card.links || []).forEach(function(l) { addLinkRow(l.label, l.url); });
+    (card.faqs || []).forEach(function(f) { addFaqRow(f.q, f.a); });
+    if (card.image) { editImgData = card.image; p.src = card.image; p.classList.add('show'); }
+    else { editImgData = null; p.src = ''; p.classList.remove('show'); }
+    document.getElementById('deleteBtnModal').style.display = 'block';
+  } else {
+    document.getElementById('modalTitle').textContent = '新增卡片';
+    document.getElementById('editTheme').value = 'shopping';
+    document.getElementById('editStatus').value = '';
+    document.getElementById('editTitle').value = '';
+    document.getElementById('editDesc').value = '';
+    addLinkRow('', '');
+    editImgData = null; p.src = ''; p.classList.remove('show');
+    document.getElementById('deleteBtnModal').style.display = 'none';
+    editingId = null;
+  }
+  document.getElementById('editModal').classList.add('open');
+  document.querySelector('.modal-content').scrollTop = 0;
+}
+
+document.getElementById('saveBtnModal').onclick = function() {
+  var title = document.getElementById('editTitle').value.trim();
+  if (!title) { alert('請填寫標題'); return; }
+  var links = [];
+  document.querySelectorAll('#linksEditor .field-row').forEach(function(row) {
+    var label = row.querySelector('.f-label').value.trim();
+    var url = row.querySelector('.f-url').value.trim();
+    if (url) links.push({ label: label || '前往連結', url: url });
+  });
+  var faqs = [];
+  document.querySelectorAll('#faqsEditor .field-row').forEach(function(row) {
+    var q = row.querySelector('.f-q').value.trim();
+    var a = row.querySelector('.f-a').value.trim();
+    if (q && a) faqs.push({ q: q, a: a });
+  });
+  var obj = {
+    theme: document.getElementById('editTheme').value,
+    status: document.getElementById('editStatus').value,
+    title: title,
+    description: document.getElementById('editDesc').value,
+    image: editImgData,
+    links: links,
+    faqs: faqs
+  };
+  if (editingId) {
+    var i = cardsData.findIndex(function(x) { return x.id === editingId; });
+    if (i !== -1) cardsData[i] = Object.assign({ id: editingId }, obj);
+  } else {
+    obj.id = Date.now();
+    cardsData.push(obj);
+  }
+  document.getElementById('editModal').classList.remove('open');
+  renderQuickNav(); renderCards();
+};
+
+document.getElementById('deleteBtnModal').onclick = function() {
+  if (editingId && confirm('確定刪除此卡片？')) {
+    cardsData = cardsData.filter(function(x) { return x.id !== editingId; });
+    document.getElementById('editModal').classList.remove('open');
+    renderQuickNav(); renderCards();
+  }
+};
+
+document.getElementById('cancelBtnModal').onclick = function() {
+  document.getElementById('editModal').classList.remove('open');
+};
+document.getElementById('editModal').onclick = function(e) {
+  if (e.target === this) this.classList.remove('open');
+};
+
+// 後台解鎖
+document.getElementById('adminUnlockBtn').onclick = function() {
+  if (document.getElementById('adminPwInput').value === ADMIN_PASSWORD) {
+    isAdminUnlocked = true;
+    document.getElementById('adminLock').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    renderCards();
+  } else {
+    document.getElementById('adminPwError').style.display = 'block';
+  }
+};
+document.getElementById('adminPwInput').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') document.getElementById('adminUnlockBtn').click();
+});
+
+document.getElementById('addBtn').onclick = function() { openEdit(null); };
+
+// 大頭照
+document.getElementById('avatarUpload').addEventListener('change', function() {
+  var f = this.files[0];
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function(e) { document.getElementById('profileAvatar').src = e.target.result; };
+  r.readAsDataURL(f);
+});
+document.getElementById('avatarUrlBtn').onclick = function() {
+  var url = document.getElementById('avatarUrlInput').value.trim();
+  if (url) {
+    document.getElementById('profileAvatar').src = url;
+    document.getElementById('avatarUrlInput').value = '';
+    alert('✅ 大頭照已更換，記得匯出 JSON 保存');
+  }
+};
+
+// 匯出 / 匯入
+document.getElementById('exportBtn').onclick = function() {
+  var data = { version: 1, avatar: document.getElementById('profileAvatar').src, cardsData: cardsData, tabOrder: tabOrder };
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'ot-workflow-backup.json';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById('importInput').addEventListener('change', function() {
+  var f = this.files[0];
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      if (data.avatar) document.getElementById('profileAvatar').src = data.avatar;
+      if (data.cardsData) cardsData = data.cardsData;
+      if (data.tabOrder) tabOrder = data.tabOrder;
+      renderTabs(); renderQuickNav(); renderCards();
+      alert('✅ 匯入成功！');
+    } catch (err) {
+      alert('❌ 匯入失敗，請確認是正確的 JSON 備份檔');
+    }
+  };
+  r.readAsText(f);
+  this.value = '';
+});
+
+renderTabs();
+renderQuickNav();
+renderCards();
+</script>
+</body>
+</html>
