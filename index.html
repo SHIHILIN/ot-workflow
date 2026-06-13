@@ -72,6 +72,39 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .faq-a{font-size:12px;color:#3d3d50;padding:9px 11px;display:none;line-height:1.7;background:#faf8fd}
 .faq-a.open{display:block}
 
+/* FAQ 圖片輪播 */
+.faq-carousel{position:relative;margin-top:10px;border-radius:8px;overflow:hidden;background:#000}
+.faq-carousel-track{display:flex;transition:transform 0.3s ease}
+.faq-carousel-slide{min-width:100%;display:flex;align-items:center;justify-content:center;background:#000}
+.faq-carousel-slide img{width:100%;height:auto;display:block;max-height:400px;object-fit:contain}
+.faq-carousel-btn{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,0.5);color:#fff;border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;z-index:2}
+.faq-carousel-btn:hover{background:rgba(0,0,0,0.75)}
+.faq-carousel-btn.prev{left:8px}
+.faq-carousel-btn.next{right:8px}
+.faq-carousel-dots{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:6px;z-index:2}
+.faq-carousel-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.4)}
+.faq-carousel-dot.active{background:#fff}
+.faq-carousel-count{position:absolute;top:8px;right:10px;background:rgba(0,0,0,0.55);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;z-index:2}
+
+/* FAQ 影片嵌入 */
+.faq-video{margin-top:10px;position:relative;width:100%;padding-bottom:125%;border-radius:8px;overflow:hidden;background:#000}
+.faq-video iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+
+/* FAQ 編輯 block */
+.faq-edit-block{border:1px solid rgba(74,158,218,0.3);border-radius:8px;padding:12px;margin-bottom:12px;background:rgba(255,255,255,0.04)}
+.faq-edit-block .feb-row{display:flex;gap:6px;margin-bottom:8px;align-items:flex-start}
+.faq-edit-block input,.faq-edit-block textarea{width:100%;padding:7px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:#e8f0f8;font-family:inherit;font-size:12px}
+.faq-edit-block textarea{resize:vertical;min-height:48px}
+.feb-label{font-size:11px;color:#8ab4d4;margin-bottom:3px;display:block}
+.feb-imgs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.feb-thumb{position:relative;width:60px;height:60px;border-radius:5px;overflow:hidden;border:1px solid rgba(255,255,255,0.2)}
+.feb-thumb img{width:100%;height:100%;object-fit:cover}
+.feb-thumb .x{position:absolute;top:1px;right:1px;width:16px;height:16px;background:rgba(220,60,60,0.9);color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:10px;line-height:1;padding:0}
+.feb-del-faq{width:100%;padding:6px;background:rgba(240,128,128,0.12);border:1px solid rgba(240,128,128,0.3);border-radius:5px;color:#f08080;cursor:pointer;font-size:11px;font-family:inherit;margin-top:4px}
+.feb-del-faq:hover{background:rgba(240,128,128,0.28)}
+.feb-mini-add{font-size:11px;padding:5px 10px;background:rgba(82,183,136,0.15);border:1px dashed rgba(82,183,136,0.5);border-radius:5px;color:#52b788;cursor:pointer;font-family:inherit}
+.feb-mini-add:hover{background:rgba(82,183,136,0.3)}
+
 /* 編輯按鈕 */
 .card-admin-btns{display:none;gap:6px;margin-top:10px}
 .card-admin-btns.show{display:flex}
@@ -352,6 +385,61 @@ var tabOrder = [
 
 var STATUS_LABEL = { permanent: '永久商品', open: '開團中', closed: '已結團' };
 
+var carouselId = 0;
+// 建立圖片輪播 HTML
+function buildCarousel(images) {
+  carouselId++;
+  var cid = 'carousel-' + carouselId;
+  var h = '<div class="faq-carousel" id="' + cid + '" data-idx="0" data-total="' + images.length + '">';
+  if (images.length > 1) h += '<div class="faq-carousel-count">1 / ' + images.length + '</div>';
+  h += '<div class="faq-carousel-track">';
+  images.forEach(function(src) {
+    h += '<div class="faq-carousel-slide"><img src="' + src + '" alt="說明圖"></div>';
+  });
+  h += '</div>';
+  if (images.length > 1) {
+    h += '<button class="faq-carousel-btn prev" data-carousel-prev="' + cid + '">‹</button>';
+    h += '<button class="faq-carousel-btn next" data-carousel-next="' + cid + '">›</button>';
+    h += '<div class="faq-carousel-dots">';
+    images.forEach(function(_, i) {
+      h += '<div class="faq-carousel-dot' + (i === 0 ? ' active' : '') + '"></div>';
+    });
+    h += '</div>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function moveCarousel(cid, dir) {
+  var c = document.getElementById(cid);
+  if (!c) return;
+  var total = parseInt(c.getAttribute('data-total'));
+  var idx = parseInt(c.getAttribute('data-idx'));
+  idx = (idx + dir + total) % total;
+  c.setAttribute('data-idx', idx);
+  c.querySelector('.faq-carousel-track').style.transform = 'translateX(-' + (idx * 100) + '%)';
+  var cnt = c.querySelector('.faq-carousel-count');
+  if (cnt) cnt.textContent = (idx + 1) + ' / ' + total;
+  var dots = c.querySelectorAll('.faq-carousel-dot');
+  dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+}
+
+// 把 IG/FB/YouTube 連結轉成可嵌入的網址
+function toEmbedUrl(url) {
+  if (!url) return null;
+  // YouTube
+  var yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([\w-]+)/);
+  if (yt) return 'https://www.youtube.com/embed/' + yt[1];
+  // Instagram reel / post
+  var ig = url.match(/instagram\.com\/(reel|p|tv)\/([\w-]+)/);
+  if (ig) return 'https://www.instagram.com/' + ig[1] + '/' + ig[2] + '/embed';
+  // Facebook
+  if (url.indexOf('facebook.com') !== -1) {
+    return 'https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent(url) + '&show_text=false&width=400';
+  }
+  return null;
+}
+
 function renderTabs() {
   var c = document.getElementById('tabsContainer');
   c.innerHTML = '';
@@ -415,7 +503,7 @@ function renderCards() {
       html += '<div class="card-img-placeholder">🖼️</div>';
     }
     html += '<div class="card-title">' + card.title + '</div>';
-    html += '<div class="card-desc">' + card.description + '</div>';
+    html += '<div class="card-desc">' + (card.description || '').replace(/\n/g, '<br>') + '</div>';
 
     var buyLinks = (card.links || []).filter(function(l) { return l.label.indexOf('影片') === -1; });
     var videoLinks = (card.links || []).filter(function(l) { return l.label.indexOf('影片') !== -1; });
@@ -425,7 +513,23 @@ function renderCards() {
       html += '<div class="faq-toggle" data-faqtoggle>❓ 常見問題（' + card.faqs.length + '）</div>';
       html += '<div class="faq-list">';
       card.faqs.forEach(function(f) {
-        html += '<div class="faq-item"><div class="faq-q" data-faqq>' + f.q + '</div><div class="faq-a">' + f.a + '</div></div>';
+        var ans = (f.a || '').replace(/\n/g, '<br>');
+        html += '<div class="faq-item"><div class="faq-q" data-faqq>' + f.q + '</div><div class="faq-a">';
+        if (ans) html += ans;
+        // 圖片輪播
+        if (f.images && f.images.length > 0) {
+          html += buildCarousel(f.images);
+        }
+        // 影片嵌入
+        if (f.video) {
+          var embed = toEmbedUrl(f.video);
+          if (embed) {
+            html += '<div class="faq-video"><iframe src="' + embed + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
+          } else {
+            html += '<a href="' + f.video + '" class="card-link" target="_blank" style="margin-top:10px;">▶️ 觀看影片</a>';
+          }
+        }
+        html += '</div></div>';
       });
       html += '</div>';
     }
@@ -457,6 +561,9 @@ function renderCards() {
 
 document.getElementById('cardsContainer').addEventListener('click', function(e) {
   var t = e.target;
+  // 輪播切換
+  if (t.hasAttribute('data-carousel-prev')) { moveCarousel(t.getAttribute('data-carousel-prev'), -1); return; }
+  if (t.hasAttribute('data-carousel-next')) { moveCarousel(t.getAttribute('data-carousel-next'), 1); return; }
   if (t.hasAttribute('data-faqtoggle')) { t.nextElementSibling.classList.toggle('open'); return; }
   if (t.hasAttribute('data-faqq')) { t.nextElementSibling.classList.toggle('open'); return; }
   if (t.hasAttribute('data-edit')) { openEdit(parseInt(t.getAttribute('data-edit'))); return; }
@@ -481,20 +588,62 @@ function addLinkRow(label, url) {
   document.getElementById('linksEditor').appendChild(row);
 }
 
-function addFaqRow(q, a) {
-  var row = document.createElement('div');
-  row.className = 'field-row';
-  row.innerHTML = '<input type="text" class="f-q" placeholder="問題" style="flex:0 0 38%;">' +
-                  '<textarea class="f-a" placeholder="答案"></textarea>' +
-                  '<button type="button" class="field-del">✕</button>';
-  row.querySelector('.f-q').value = q || '';
-  row.querySelector('.f-a').value = a || '';
-  row.querySelector('.field-del').onclick = function() { row.remove(); };
-  document.getElementById('faqsEditor').appendChild(row);
+function addFaqRow(q, a, images, video) {
+  var block = document.createElement('div');
+  block.className = 'faq-edit-block';
+  block._images = (images || []).slice();
+
+  block.innerHTML =
+    '<span class="feb-label">問題</span>' +
+    '<input type="text" class="f-q" placeholder="例：0.7mm 和 1.3mm 差在哪？">' +
+    '<span class="feb-label" style="margin-top:8px;">答案（可換行）</span>' +
+    '<textarea class="f-a" placeholder="輸入答案，按 Enter 可換行"></textarea>' +
+    '<span class="feb-label" style="margin-top:8px;">說明圖片（可多張，前台可左右滑動）</span>' +
+    '<div class="feb-imgs"></div>' +
+    '<label class="feb-mini-add" style="display:inline-block;">📷 上傳圖片<input type="file" class="f-imgupload" accept="image/*" multiple style="display:none;"></label>' +
+    '<span class="feb-label" style="margin-top:10px;">影片連結（IG / FB / YouTube，會自動嵌入播放）</span>' +
+    '<input type="text" class="f-video" placeholder="https://...">' +
+    '<button type="button" class="feb-del-faq">🗑️ 刪除這題</button>';
+
+  block.querySelector('.f-q').value = q || '';
+  block.querySelector('.f-a').value = a || '';
+  block.querySelector('.f-video').value = video || '';
+
+  function renderThumbs() {
+    var box = block.querySelector('.feb-imgs');
+    box.innerHTML = '';
+    block._images.forEach(function(src, i) {
+      var t = document.createElement('div');
+      t.className = 'feb-thumb';
+      t.innerHTML = '<img src="' + src + '"><button type="button" class="x">✕</button>';
+      t.querySelector('.x').onclick = function() { block._images.splice(i, 1); renderThumbs(); };
+      box.appendChild(t);
+    });
+  }
+  renderThumbs();
+
+  block.querySelector('.f-imgupload').addEventListener('change', function() {
+    var files = Array.prototype.slice.call(this.files);
+    var self = this;
+    var pending = files.length;
+    files.forEach(function(f) {
+      var r = new FileReader();
+      r.onload = function(e) {
+        block._images.push(e.target.result);
+        pending--;
+        if (pending === 0) { renderThumbs(); self.value = ''; }
+      };
+      r.readAsDataURL(f);
+    });
+  });
+
+  block.querySelector('.feb-del-faq').onclick = function() { block.remove(); };
+
+  document.getElementById('faqsEditor').appendChild(block);
 }
 
 document.getElementById('addLinkBtn').onclick = function() { addLinkRow('', ''); };
-document.getElementById('addFaqBtn').onclick = function() { addFaqRow('', ''); };
+document.getElementById('addFaqBtn').onclick = function() { addFaqRow('', '', [], ''); };
 
 // 圖片上傳
 document.getElementById('editImgUpload').addEventListener('change', function() {
@@ -531,7 +680,7 @@ function openEdit(id) {
     document.getElementById('editTitle').value = card.title;
     document.getElementById('editDesc').value = card.description;
     (card.links || []).forEach(function(l) { addLinkRow(l.label, l.url); });
-    (card.faqs || []).forEach(function(f) { addFaqRow(f.q, f.a); });
+    (card.faqs || []).forEach(function(f) { addFaqRow(f.q, f.a, f.images, f.video); });
     if (card.image) { editImgData = card.image; p.src = card.image; p.classList.add('show'); }
     else { editImgData = null; p.src = ''; p.classList.remove('show'); }
     document.getElementById('deleteBtnModal').style.display = 'block';
@@ -560,10 +709,15 @@ document.getElementById('saveBtnModal').onclick = function() {
     if (url) links.push({ label: label || '前往連結', url: url });
   });
   var faqs = [];
-  document.querySelectorAll('#faqsEditor .field-row').forEach(function(row) {
-    var q = row.querySelector('.f-q').value.trim();
-    var a = row.querySelector('.f-a').value.trim();
-    if (q && a) faqs.push({ q: q, a: a });
+  document.querySelectorAll('#faqsEditor .faq-edit-block').forEach(function(block) {
+    var q = block.querySelector('.f-q').value.trim();
+    var a = block.querySelector('.f-a').value.trim();
+    var video = block.querySelector('.f-video').value.trim();
+    var images = block._images || [];
+    // 只要有問題，且至少有答案/圖片/影片其中之一就保留
+    if (q && (a || images.length > 0 || video)) {
+      faqs.push({ q: q, a: a, images: images, video: video });
+    }
   });
   var obj = {
     theme: document.getElementById('editTheme').value,
